@@ -4,81 +4,264 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fort Drum 2026 World Cup Travel Planner</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23050a18'/%3E%3Cpath d='M18 18h28v28H18z' fill='none' stroke='%2333e6ff' stroke-width='3' opacity='.35'/%3E%3Ctext x='32' y='30' text-anchor='middle' font-size='16' font-family='Arial,sans-serif' font-weight='700' fill='%23f6f8ff'%3E20%3C/text%3E%3Ctext x='32' y='47' text-anchor='middle' font-size='16' font-family='Arial,sans-serif' font-weight='700' fill='%23ff3f93'%3E26%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <style>
     :root {
-      --primary: #00153e;
-      --primary-container: #002868;
-      --secondary: #ba022d;
-      --surface: #f7f9fb;
-      --surface-low: #f2f4f6;
-      --surface-lowest: #ffffff;
-      --surface-high: #e6e8ea;
-      --text: #191c1e;
-      --text-soft: #5b5f6a;
-      --outline: rgba(116, 119, 129, 0.18);
-      --shadow: 0 12px 32px rgba(0, 21, 62, 0.08);
-      --radius-xl: 22px;
-      --radius-lg: 16px;
-      --usa: #00153e;
-      --canada: #ba022d;
-      --mexico: #0d7a43;
-      --success: #0b8457;
-      --warning: #b86a00;
-      --danger: #a12626;
-      --hero: linear-gradient(135deg, #00153e 0%, #002868 55%, #ba022d 120%);
+      --bg: #050816;
+      --bg-elevated: #0b1228;
+      --panel: rgba(8, 13, 28, 0.78);
+      --panel-strong: rgba(10, 15, 31, 0.92);
+      --panel-soft: rgba(255, 255, 255, 0.05);
+      --panel-border: rgba(125, 149, 255, 0.16);
+      --panel-border-strong: rgba(255, 255, 255, 0.24);
+      --text: #f6f8ff;
+      --text-soft: #9da7cc;
+      --text-faint: #6c769d;
+      --accent-pink: #ff3f93;
+      --accent-cyan: #33e6ff;
+      --accent-blue: #5c7cff;
+      --usa: #4ab8ff;
+      --canada: #ff4d93;
+      --mexico: #61f1ad;
+      --success: #61f1ad;
+      --warning: #ffd166;
+      --danger: #ff7b8a;
+      --shadow: 0 30px 70px rgba(0, 0, 0, 0.42);
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.28);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
     }
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
       font-family: 'Inter', system-ui, sans-serif;
-      background: var(--surface);
       color: var(--text);
       line-height: 1.45;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(255, 63, 147, 0.17), transparent 24%),
+        radial-gradient(circle at 84% 10%, rgba(51, 230, 255, 0.16), transparent 22%),
+        radial-gradient(circle at 50% 85%, rgba(92, 124, 255, 0.12), transparent 28%),
+        linear-gradient(180deg, #040712 0%, #081020 38%, #060913 100%);
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 120px 120px;
+      mask-image: radial-gradient(circle at center, black 36%, transparent 84%);
+      opacity: 0.34;
+      pointer-events: none;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, select { font: inherit; }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 228px 1fr;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
     }
 
-    .shell {
-      max-width: 1500px;
-      margin: 0 auto;
-      padding: 24px;
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 18px 22px;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      background: linear-gradient(180deg, rgba(4, 7, 18, 0.95), rgba(8, 12, 26, 0.78));
+      backdrop-filter: blur(22px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .brand-stack {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .brand-mark {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+      display: grid;
+      place-items: center;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+    }
+    .brand-label {
+      color: var(--text-faint);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .brand-sub {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+    .nav-list {
+      display: grid;
+      gap: 10px;
+    }
+    .nav-list a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      color: var(--text-soft);
+      border: 1px solid transparent;
+      transition: background 0.22s ease, color 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+    }
+    .nav-list a::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.55;
+    }
+    .nav-list a:hover,
+    .nav-list a.active {
+      transform: translateX(3px);
+      color: var(--text);
+      background: linear-gradient(90deg, rgba(255, 63, 147, 0.16), rgba(255, 63, 147, 0.04));
+      border-color: rgba(255, 63, 147, 0.22);
+    }
+    .sidebar-note {
+      padding: 16px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow-soft);
+    }
+    .sidebar-note-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-faint);
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+    .sidebar-note-value {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .sidebar-note p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.92rem;
+    }
+
+    .workspace {
+      min-width: 0;
+      padding: 22px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .topbar-kicker {
+      margin: 0 0 6px;
+      color: var(--text-faint);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 800;
+    }
+    .topbar h1 {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: clamp(1.8rem, 3vw, 2.75rem);
+      line-height: 0.98;
+      letter-spacing: -0.07em;
+      max-width: 560px;
+    }
+    .topbar-status {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      max-width: 460px;
+    }
+    .topbar-status span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-soft);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
     }
 
     .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.9fr) 238px;
+      gap: 18px;
+      margin-bottom: 20px;
+      align-items: stretch;
+    }
+    .hero-copy,
+    .hero-visual,
+    .hero-stack,
+    .card,
+    .venue-deck,
+    .profile-card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px);
+    }
+    .hero-copy,
+    .hero-stack {
+      padding: 22px;
       position: relative;
       overflow: hidden;
-      background: var(--hero);
-      color: white;
-      border-radius: 28px;
-      padding: 36px;
-      box-shadow: var(--shadow);
-      margin-bottom: 24px;
     }
-    .hero::before,
-    .hero::after {
+    .hero-copy::before,
+    .hero-visual::before,
+    .hero-stack::before,
+    .card::before,
+    .profile-card::before {
       content: "";
       position: absolute;
-      border-radius: 999px;
-      filter: blur(20px);
-      opacity: 0.28;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), transparent 32%);
       pointer-events: none;
-    }
-    .hero::before {
-      width: 280px; height: 280px;
-      right: -60px; top: -60px;
-      background: rgba(255,255,255,0.18);
-    }
-    .hero::after {
-      width: 360px; height: 360px;
-      left: -100px; bottom: -160px;
-      background: rgba(255,255,255,0.1);
     }
     .eyebrow {
       display: inline-flex;
@@ -86,113 +269,830 @@
       gap: 10px;
       padding: 8px 14px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(8px);
-      font-size: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-soft);
+      font-size: 0.74rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.14em;
       margin-bottom: 18px;
     }
-    .dot {
-      width: 9px; height: 9px; border-radius: 999px; background: #7df0c1;
-      box-shadow: 0 0 0 8px rgba(125,240,193,0.12);
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent-pink);
+      box-shadow: 0 0 0 8px rgba(255, 63, 147, 0.12);
     }
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
-      gap: 22px;
-      position: relative;
-      z-index: 1;
-    }
-    .hero h1 {
+    .hero-copy h2 {
       margin: 0 0 14px;
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      font-size: clamp(2rem, 4.6vw, 4.7rem);
-      line-height: 0.95;
-      letter-spacing: -0.06em;
+      font-size: clamp(1.95rem, 3vw, 3.4rem);
+      line-height: 0.96;
+      letter-spacing: -0.08em;
+      max-width: 520px;
     }
-    .hero p {
-      margin: 0;
-      max-width: 780px;
-      color: rgba(255,255,255,0.86);
-      font-size: 1rem;
+    .hero-copy p {
+      margin: 0 0 20px;
+      max-width: 560px;
+      color: var(--text-soft);
+      font-size: 0.95rem;
     }
-    .hero-metrics {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
       gap: 12px;
+      margin-bottom: 18px;
+    }
+    .hero-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+    .hero-btn:hover { transform: translateY(-2px); }
+    .hero-btn.primary {
+      color: #0a1022;
+      background: linear-gradient(90deg, var(--accent-cyan), #8af0ff);
+      box-shadow: 0 20px 40px rgba(51, 230, 255, 0.18);
+    }
+    .hero-btn.secondary {
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+    }
+    .hero-rules {
+      display: grid;
+      gap: 9px;
+      color: var(--text-soft);
+      font-size: 0.9rem;
+    }
+    .hero-rules div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rule-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+    .rule-dot.road { background: var(--success); box-shadow: 0 0 0 8px rgba(97, 241, 173, 0.12); }
+    .rule-dot.air { background: var(--warning); box-shadow: 0 0 0 8px rgba(255, 209, 102, 0.12); }
+
+    .hero-visual {
+      min-height: 408px;
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
+      gap: 12px;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(92, 124, 255, 0.16), transparent 36%),
+        linear-gradient(180deg, rgba(7, 11, 25, 0.82), rgba(9, 13, 28, 0.98));
+    }
+    .hero-map-head,
+    .hero-map-foot,
+    .hero-map-note {
+      position: relative;
+      z-index: 2;
+    }
+    .hero-map-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-end;
+    }
+    .hero-map-head span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text-faint);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .hero-map-head h3 {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: -0.04em;
+    }
+    .hero-map-summary {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(8, 12, 26, 0.76);
+      color: var(--text);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .hero-map {
+      position: relative;
+      z-index: 1;
+      min-height: 282px;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+    .hero-map .leaflet-control-attribution {
+      display: none;
+    }
+    .hero-map-foot {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .hero-map-chip {
+      padding: 8px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      font-size: 0.74rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.22s ease, border-color 0.22s ease, color 0.22s ease, background 0.22s ease;
+    }
+    .hero-map-chip:hover {
+      transform: translateY(-1px);
+      color: var(--text);
+      border-color: rgba(255,255,255,0.18);
+    }
+    .hero-map-chip.active {
+      color: var(--text);
+      border-color: rgba(51,230,255,0.28);
+      background: linear-gradient(90deg, rgba(51,230,255,0.12), rgba(92,124,255,0.12));
+    }
+    .hero-map-note {
+      color: var(--text-soft);
+      font-size: 0.84rem;
+    }
+    .hero-shortlist-pin {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,0.92);
+      box-shadow: 0 0 0 8px rgba(255,255,255,0.08), 0 8px 18px rgba(0,0,0,0.28);
+    }
+    .hero-shortlist-pin.active {
+      box-shadow: 0 0 0 10px rgba(51,230,255,0.12), 0 10px 22px rgba(0,0,0,0.34);
+    }
+
+    .hero-stack {
+      display: grid;
+      gap: 14px;
       align-content: start;
     }
-    .metric {
+    .metric-card,
+    .hero-focus {
+      position: relative;
+      z-index: 1;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      overflow: hidden;
+    }
+    .metric-card {
       padding: 18px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.14);
-      backdrop-filter: blur(14px);
-      min-height: 110px;
+      min-height: 112px;
     }
     .metric-value {
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      font-size: 2rem;
-      font-weight: 800;
+      font-size: 2.08rem;
       line-height: 1;
-      letter-spacing: -0.05em;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      margin-bottom: 8px;
     }
     .metric-label {
-      margin-top: 8px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.8);
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-weight: 700;
+      color: var(--text-faint);
+      font-weight: 800;
+      margin-bottom: 7px;
     }
     .metric-note {
-      margin-top: 6px;
-      color: rgba(255,255,255,0.8);
-      font-size: 13px;
+      font-size: 0.88rem;
+      color: var(--text-soft);
     }
+    .metric-card.cyan .metric-value { color: var(--accent-cyan); text-shadow: 0 0 20px rgba(51,230,255,0.18); }
+    .metric-card.pink .metric-value { color: var(--accent-pink); text-shadow: 0 0 20px rgba(255,63,147,0.18); }
 
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.3fr) 380px;
-      gap: 22px;
-      align-items: start;
-      margin-bottom: 24px;
+    .hero-focus {
+      min-height: 160px;
+      padding: 0;
     }
-
-    .card {
-      background: var(--surface-lowest);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow);
-    }
-
-    .map-card {
+    .hero-focus-media {
+      position: relative;
+      height: 94px;
       overflow: hidden;
-      min-height: 720px;
-      display: flex;
-      flex-direction: column;
+    }
+    .hero-focus-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .hero-focus-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(8,13,28,0.08), rgba(8,13,28,0.9));
+    }
+    .hero-focus-copy {
+      padding: 14px 16px 16px;
+    }
+    .hero-focus-copy h3 {
+      margin: 0 0 6px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.05rem;
+      letter-spacing: -0.04em;
+    }
+    .hero-focus-copy p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.9rem;
     }
 
+    .venue-deck {
+      padding: 22px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
     .section-head {
-      padding: 24px 24px 0;
+      position: relative;
+      z-index: 1;
       display: flex;
       justify-content: space-between;
-      align-items: start;
-      gap: 12px;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 0 0 18px;
     }
     .section-title {
       margin: 0;
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      font-size: 1.6rem;
-      letter-spacing: -0.05em;
-      color: var(--primary);
+      font-size: 1.7rem;
+      letter-spacing: -0.06em;
     }
     .section-subtitle {
       margin: 6px 0 0;
       color: var(--text-soft);
-      font-size: 0.95rem;
+      font-size: 0.96rem;
+      max-width: 820px;
     }
 
+    .cards-grid {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      width: 100%;
+      max-width: 100%;
+      padding: 4px 2px 10px;
+      scroll-snap-type: x mandatory;
+    }
+    .cards-grid::-webkit-scrollbar {
+      height: 10px;
+    }
+    .cards-grid::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+    }
+    .stadium-card {
+      position: relative;
+      flex: 0 0 min(320px, 82vw);
+      scroll-snap-align: start;
+      overflow: hidden;
+      min-height: 380px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease;
+      cursor: pointer;
+    }
+    .stadium-card:hover,
+    .stadium-card.active {
+      transform: translateY(-6px);
+      border-color: rgba(51,230,255,0.28);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.34), 0 0 26px rgba(51,230,255,0.1);
+    }
+    .stadium-card.active::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-pink), var(--accent-cyan));
+    }
+    .stadium-art {
+      position: relative;
+      height: 196px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(92,124,255,0.24), rgba(255,63,147,0.18));
+    }
+    .stadium-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(1.08) contrast(1.04);
+    }
+    .stadium-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(4,7,18,0.08), rgba(4,7,18,0.16) 34%, rgba(4,7,18,0.92) 100%);
+    }
+    .stadium-fallback {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,255,255,0.14), transparent 20%),
+        linear-gradient(135deg, rgba(51,230,255,0.24), rgba(255,63,147,0.22));
+      color: rgba(255,255,255,0.92);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      text-align: center;
+      padding: 20px;
+    }
+    .stadium-topline {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      z-index: 2;
+    }
+    .country-badge,
+    .stadium-distance {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(4, 7, 18, 0.64);
+      color: var(--text);
+      backdrop-filter: blur(10px);
+    }
+    .country-badge.usa { color: var(--usa); }
+    .country-badge.canada { color: var(--canada); }
+    .country-badge.mexico { color: var(--mexico); }
+    .stadium-headline {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      z-index: 2;
+    }
+    .stadium-headline p {
+      margin: 0 0 6px;
+      color: rgba(255,255,255,0.78);
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      font-weight: 700;
+    }
+    .stadium-headline h3 {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.45rem;
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+    .stadium-body {
+      padding: 18px 16px 16px;
+      display: grid;
+      gap: 14px;
+    }
+    .stadium-meta {
+      color: var(--text-soft);
+      font-size: 0.9rem;
+    }
+    .kv-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .kv {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .kv .k {
+      margin-bottom: 4px;
+      color: var(--text-faint);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 800;
+    }
+    .kv .v {
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.96rem;
+      letter-spacing: -0.03em;
+    }
+    .note {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.9rem;
+    }
+    .note strong { color: var(--text); }
+
+    .profile-card {
+      padding: 24px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .atlas-section {
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .atlas-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      align-items: start;
+    }
+    .atlas-column {
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+    .atlas-card {
+      overflow: hidden;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      box-shadow: var(--shadow-soft);
+    }
+    .atlas-cover {
+      position: relative;
+      height: 210px;
+      overflow: hidden;
+    }
+    .atlas-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(1.08) contrast(1.03);
+    }
+    .atlas-cover::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(5,8,18,0.08), rgba(5,8,18,0.18) 42%, rgba(5,8,18,0.88) 100%);
+    }
+    .atlas-chip-row {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .atlas-chip,
+    .atlas-capacity {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(5,8,18,0.68);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .atlas-chip.usa { color: var(--usa); }
+    .atlas-chip.canada { color: var(--canada); }
+    .atlas-chip.mexico { color: var(--mexico); }
+    .atlas-headline {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      z-index: 2;
+    }
+    .atlas-headline p {
+      margin: 0 0 6px;
+      color: rgba(255,255,255,0.78);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 800;
+    }
+    .atlas-headline h3 {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.4rem;
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+    .atlas-body {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+    .atlas-location {
+      margin: -4px 0 0;
+      color: var(--text-soft);
+      font-size: 0.9rem;
+    }
+    .atlas-facts {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .atlas-fact {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .atlas-fact span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text-faint);
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-weight: 800;
+    }
+    .atlas-fact strong {
+      color: var(--text);
+      font-size: 0.84rem;
+      letter-spacing: -0.02em;
+    }
+    .atlas-note {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.88rem;
+    }
+    .atlas-story-grid {
+      display: grid;
+      gap: 10px;
+    }
+    .atlas-story {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .atlas-story span {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-faint);
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 800;
+    }
+    .atlas-story p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.86rem;
+    }
+    .atlas-thumbs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .atlas-thumb {
+      position: relative;
+      min-height: 118px;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.04);
+    }
+    .atlas-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .atlas-thumb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(5,8,18,0.06), rgba(5,8,18,0.72));
+    }
+    .atlas-thumb span {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      z-index: 1;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+    }
+    .atlas-jump {
+      width: 100%;
+      border: 1px solid rgba(51,230,255,0.18);
+      background: linear-gradient(90deg, rgba(51,230,255,0.16), rgba(92,124,255,0.14));
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      cursor: pointer;
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+    }
+    .atlas-jump:hover {
+      transform: translateY(-1px);
+      border-color: rgba(51,230,255,0.3);
+      background: linear-gradient(90deg, rgba(51,230,255,0.22), rgba(92,124,255,0.18));
+    }
+    .profile-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
+      gap: 22px;
+    }
+    .profile-gallery {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) 0.85fr;
+      gap: 12px;
+      min-height: 420px;
+    }
+    .lead-shot,
+    .gallery-shot {
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      box-shadow: var(--shadow-soft);
+    }
+    .lead-shot { min-height: 420px; }
+    .gallery-column {
+      display: grid;
+      gap: 12px;
+      grid-template-rows: 1fr 1fr;
+    }
+    .gallery-shot { min-height: 204px; }
+    .lead-shot img,
+    .gallery-shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(1.08) contrast(1.03);
+    }
+    .gallery-caption {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      padding: 12px 13px;
+      border-radius: 16px;
+      background: rgba(5, 8, 18, 0.76);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(14px);
+    }
+    .gallery-caption span {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--text-faint);
+    }
+    .gallery-caption strong {
+      font-size: 1rem;
+      letter-spacing: -0.03em;
+    }
+    .profile-copy {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .profile-kicker {
+      color: var(--text-faint);
+      font-size: 0.76rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    .profile-title {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: clamp(2rem, 3vw, 2.9rem);
+      line-height: 0.96;
+      letter-spacing: -0.07em;
+    }
+    .fact-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .fact-chip {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .fact-chip span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text-faint);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 800;
+    }
+    .fact-chip strong {
+      color: var(--text);
+      font-size: 0.98rem;
+      letter-spacing: -0.03em;
+    }
+    .profile-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .story-block {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .story-block h3 {
+      margin: 0 0 8px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1rem;
+      letter-spacing: -0.04em;
+    }
+    .story-block p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.93rem;
+    }
+    .photo-credit {
+      color: var(--text-faint);
+      font-size: 0.8rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) 340px;
+      gap: 22px;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+    .card {
+      position: relative;
+      overflow: hidden;
+    }
+    .map-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 780px;
+    }
+    .map-card .section-head,
+    .table-card .section-head,
+    .insights-card .section-head,
+    .schedules-card .section-head,
+    .calendar-card .section-head,
+    .summary-card .section-head {
+      padding: 24px 24px 0;
+    }
     .controls {
       padding: 18px 24px 18px;
       display: grid;
@@ -202,57 +1102,64 @@
     .control {
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 8px;
     }
     .control label {
-      font-size: 11px;
+      color: var(--text-faint);
+      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.16em;
       font-weight: 800;
-      color: var(--text-soft);
     }
-    select, button.filter-btn {
+    select,
+    button.filter-btn {
       width: 100%;
-      border: 0;
-      background: var(--surface-low);
-      color: var(--primary);
-      padding: 12px 14px;
-      border-radius: 14px;
-      font: inherit;
-      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 14px 16px;
+      border-radius: 16px;
       outline: none;
-      transition: transform .2s ease, background .2s ease;
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
     }
-    select:hover, button.filter-btn:hover { transform: translateY(-1px); background: #edf1f5; }
-
+    select:hover,
+    button.filter-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(51,230,255,0.22);
+      background: rgba(255,255,255,0.07);
+    }
     .country-pills {
-      display: flex; flex-wrap: wrap; gap: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .pill {
       padding: 10px 14px;
       border-radius: 999px;
-      font-size: 13px;
+      font-size: 0.78rem;
       font-weight: 800;
+      letter-spacing: -0.02em;
       cursor: pointer;
-      border: 0;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      transition: transform 0.22s ease, border-color 0.22s ease, color 0.22s ease, background 0.22s ease;
     }
-    .pill.active { color: white; box-shadow: 0 10px 22px rgba(0,0,0,0.12); }
-    .pill[data-country="All"] { background: var(--surface-high); color: var(--primary); }
-    .pill[data-country="United States"] { background: rgba(0,21,62,0.1); color: var(--primary); }
-    .pill[data-country="Canada"] { background: rgba(186,2,45,0.1); color: var(--secondary); }
-    .pill[data-country="Mexico"] { background: rgba(13,122,67,0.12); color: var(--mexico); }
-    .pill.active[data-country="All"] { background: #344155; }
-    .pill.active[data-country="United States"] { background: var(--usa); }
-    .pill.active[data-country="Canada"] { background: var(--canada); }
-    .pill.active[data-country="Mexico"] { background: var(--mexico); }
+    .pill:hover { transform: translateY(-1px); }
+    .pill.active { color: var(--text); }
+    .pill.active[data-country="All"] { border-color: rgba(255,255,255,0.16); background: rgba(255,255,255,0.1); }
+    .pill.active[data-country="United States"] { border-color: rgba(74,184,255,0.4); background: rgba(74,184,255,0.16); }
+    .pill.active[data-country="Canada"] { border-color: rgba(255,77,147,0.38); background: rgba(255,77,147,0.16); }
+    .pill.active[data-country="Mexico"] { border-color: rgba(97,241,173,0.4); background: rgba(97,241,173,0.14); }
 
     #map {
-      height: 520px;
-      margin: 0 24px 24px;
-      border-radius: 20px;
+      height: 560px;
+      margin: 0 24px 22px;
+      border-radius: 24px;
       overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
     }
-
     .map-foot {
       display: flex;
       flex-wrap: wrap;
@@ -260,191 +1167,186 @@
       padding: 0 24px 24px;
     }
     .legend {
-      background: var(--surface-low);
-      border-radius: 999px;
-      padding: 9px 12px;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-soft);
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-soft);
+      font-size: 0.76rem;
+      font-weight: 700;
     }
     .legend .chip {
-      width: 10px; height: 10px; border-radius: 999px;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
     }
 
     .side-panel {
+      position: sticky;
+      top: 20px;
       padding: 18px;
       display: grid;
-      gap: 18px;
-      position: sticky;
-      top: 18px;
+      gap: 16px;
     }
     .mini-card {
-      background: var(--surface-low);
       padding: 18px;
-      border-radius: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
     }
     .mini-card h3 {
       margin: 0 0 12px;
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.05rem;
       letter-spacing: -0.04em;
-      color: var(--primary);
     }
-    .rank-list {
-      display: grid; gap: 10px;
-    }
-    .rank-item {
-      padding: 14px;
-      border-radius: 16px;
-      background: var(--surface-lowest);
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 12px;
-      align-items: center;
-      transition: transform .2s ease, box-shadow .2s ease;
-      cursor: pointer;
-    }
-    .rank-item:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,21,62,0.08); }
-    .rank-num {
-      width: 32px; height: 32px; border-radius: 999px;
-      display: grid; place-items: center;
-      background: var(--surface-low);
-      color: var(--primary);
-      font-size: 13px; font-weight: 800;
-    }
-    .rank-name { font-weight: 800; color: var(--primary); }
-    .rank-meta { font-size: 12px; color: var(--text-soft); }
-    .country-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 6px 10px; border-radius: 999px;
-      font-size: 11px; font-weight: 800;
-      text-transform: uppercase; letter-spacing: 0.08em;
-      background: var(--surface-lowest);
-      width: fit-content;
-    }
-    .country-badge.usa { color: var(--usa); }
-    .country-badge.canada { color: var(--canada); }
-    .country-badge.mexico { color: var(--mexico); }
-
+    .rank-list,
     .best-grid {
       display: grid;
       gap: 10px;
     }
-    .best-box {
-      background: var(--surface-lowest);
+    .rank-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
       border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.04);
+      cursor: pointer;
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+    }
+    .rank-item:hover,
+    .rank-item.active {
+      transform: translateY(-2px);
+      border-color: rgba(255, 63, 147, 0.24);
+      background: rgba(255,255,255,0.06);
+    }
+    .rank-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+    .rank-name {
+      color: var(--text);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .rank-meta {
+      color: var(--text-soft);
+      font-size: 0.8rem;
+    }
+    .best-box {
       padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
     }
     .best-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-weight: 800;
-      color: var(--text-soft);
       margin-bottom: 6px;
+      color: var(--text-faint);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 800;
     }
     .best-value {
-      font-weight: 800;
-      color: var(--primary);
       margin-bottom: 3px;
+      color: var(--text);
+      font-weight: 800;
+      letter-spacing: -0.03em;
     }
     .best-note {
-      font-size: 13px;
       color: var(--text-soft);
+      font-size: 0.87rem;
     }
 
-    .cards-grid {
+    .panel-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-      margin: 24px 0;
-    }
-    .stadium-card {
-      position: relative;
-      overflow: hidden;
-      padding: 20px;
-      min-height: 290px;
-      transition: transform .24s ease, box-shadow .24s ease;
-    }
-    .stadium-card:hover { transform: translateY(-4px); box-shadow: 0 18px 38px rgba(0,21,62,0.12); }
-    .stadium-card::before {
-      content: "";
-      position: absolute;
-      inset: auto -25% -30% auto;
-      width: 220px; height: 220px;
-      border-radius: 999px;
-      background: radial-gradient(circle, rgba(186,2,45,0.08), transparent 70%);
-      pointer-events: none;
-    }
-    .stadium-card h3 {
-      margin: 8px 0 6px;
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      letter-spacing: -0.04em;
-      color: var(--primary);
-      font-size: 1.35rem;
-    }
-    .stadium-meta {
-      color: var(--text-soft);
-      font-size: 14px;
-      margin-bottom: 14px;
-    }
-    .kv-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .kv {
-      background: var(--surface-low);
-      padding: 12px;
-      border-radius: 14px;
-    }
-    .kv .k {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      font-weight: 800;
-      color: var(--text-soft);
-      margin-bottom: 4px;
-    }
-    .kv .v {
-      font-weight: 800;
-      color: var(--primary);
-      font-size: 0.97rem;
-    }
-    .note {
-      font-size: 13px;
-      color: var(--text-soft);
-      margin: 0;
-    }
-    .note strong { color: var(--primary); }
-
-    .table-card, .schedules-card, .calendar-card, .insights-card, .summary-card {
-      padding: 24px;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 22px;
       margin-bottom: 24px;
+    }
+    .table-card,
+    .insights-card,
+    .schedules-card,
+    .calendar-card,
+    .summary-card {
+      padding-bottom: 24px;
+    }
+    .table-card > div:last-child,
+    .calendar-card > div:last-child,
+    .summary-card > div:last-child {
+      padding: 0 24px;
+    }
+    .schedules-card > div:last-child,
+    .insights-card > div:last-child {
+      padding: 0 24px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 14px;
+      font-size: 0.92rem;
     }
-    th, td {
+    th,
+    td {
       text-align: left;
       padding: 14px 12px;
       vertical-align: top;
     }
     th {
-      color: var(--text-soft);
-      font-size: 11px;
+      color: var(--text-faint);
+      font-size: 0.68rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      border-bottom: 1px solid var(--outline);
+      letter-spacing: 0.16em;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    td { border-bottom: 1px solid rgba(0,0,0,0.05); }
-    tbody tr:hover { background: rgba(0,21,62,0.025); }
+    td {
+      color: var(--text-soft);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    td strong { color: var(--text); }
+    tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+    .insights-grid,
+    .summary-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .insight,
+    .summary-box {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .insight h3,
+    .summary-box h3 {
+      margin: 0 0 10px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.08rem;
+      letter-spacing: -0.04em;
+    }
+    .footnote {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      font-size: 0.88rem;
+    }
 
     .schedule-grid {
       display: grid;
@@ -452,54 +1354,73 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .venue-schedule {
-      background: var(--surface-low);
-      border-radius: 20px;
       padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: border-color 0.22s ease, transform 0.22s ease;
+    }
+    .venue-schedule.active {
+      border-color: rgba(255, 63, 147, 0.32);
+      transform: translateY(-2px);
     }
     .venue-head {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
-      align-items: start;
+      gap: 12px;
+      align-items: flex-start;
       margin-bottom: 14px;
     }
     .venue-name {
       margin: 0;
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.18rem;
       letter-spacing: -0.04em;
-      color: var(--primary);
+      color: var(--text);
     }
     .matches {
-      display: grid; gap: 10px;
+      display: grid;
+      gap: 10px;
     }
     .match {
-      background: var(--surface-lowest);
-      border-radius: 16px;
       padding: 13px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
     }
     .match-top {
-      display: flex; justify-content: space-between; gap: 12px; align-items: center;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
       margin-bottom: 8px;
     }
     .match-stage {
       display: inline-flex;
-      padding: 5px 10px;
+      padding: 6px 11px;
       border-radius: 999px;
-      font-size: 11px;
+      font-size: 0.72rem;
       font-weight: 800;
-      background: rgba(0,21,62,0.08);
-      color: var(--primary);
+      background: rgba(51, 230, 255, 0.12);
+      color: var(--accent-cyan);
     }
     .match-date {
-      font-size: 12px;
+      font-size: 0.74rem;
       font-weight: 800;
-      color: var(--secondary);
+      color: var(--warning);
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
     }
-    .match-fixture { font-weight: 800; color: var(--primary); }
-    .match-code { font-size: 12px; color: var(--text-soft); margin-top: 4px; }
+    .match-fixture {
+      color: var(--text);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .match-code {
+      margin-top: 4px;
+      color: var(--text-soft);
+      font-size: 0.78rem;
+    }
 
     .calendar-wrap {
       display: grid;
@@ -507,324 +1428,557 @@
       gap: 18px;
     }
     .month {
-      background: var(--surface-low);
-      border-radius: 22px;
       padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
     }
     .month h3 {
       margin: 0 0 12px;
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      color: var(--primary);
+      font-size: 1.2rem;
       letter-spacing: -0.04em;
     }
     .agenda {
-      display: grid; gap: 10px;
+      display: grid;
+      gap: 10px;
     }
     .day {
-      background: var(--surface-lowest);
-      border-radius: 16px;
       padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
     }
     .day-head {
-      display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
       margin-bottom: 8px;
     }
-    .day-date { font-weight: 800; color: var(--primary); }
-    .day-count { font-size: 12px; color: var(--text-soft); }
-    .event-list { display: grid; gap: 6px; }
+    .day-date {
+      color: var(--text);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .day-count {
+      color: var(--text-soft);
+      font-size: 0.78rem;
+    }
+    .event-list {
+      display: grid;
+      gap: 6px;
+    }
     .event-item {
-      font-size: 13px;
-      color: var(--text-soft);
-      background: var(--surface-low);
-      padding: 8px 10px;
+      padding: 9px 10px;
       border-radius: 12px;
-    }
-    .event-item strong { color: var(--primary); }
-
-    .insights-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-    .insight {
-      background: var(--surface-low);
-      border-radius: 18px;
-      padding: 18px;
-    }
-    .insight h3 {
-      margin: 0 0 8px;
-      color: var(--primary);
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      letter-spacing: -0.03em;
-      font-size: 1.1rem;
-    }
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-    .summary-box {
-      background: var(--surface-low);
-      border-radius: 18px;
-      padding: 18px;
-    }
-    .summary-box h3 {
-      margin: 0 0 10px;
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      color: var(--primary);
-      letter-spacing: -0.03em;
-    }
-
-    .footnote {
-      margin-top: 18px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: #f0f3f7;
-      font-size: 13px;
+      background: rgba(255,255,255,0.04);
       color: var(--text-soft);
+      font-size: 0.84rem;
     }
+    .event-item strong { color: var(--text); }
 
     .marker-pin {
-      width: 18px; height: 18px; border-radius: 999px;
-      border: 3px solid white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,0.82);
+      box-shadow: 0 0 0 8px rgba(255,255,255,0.08), 0 8px 18px rgba(0,0,0,0.3);
     }
     .popup-box {
-      min-width: 250px;
+      min-width: 260px;
       font-family: 'Inter', system-ui, sans-serif;
     }
     .popup-title {
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      color: var(--primary);
-      font-weight: 800;
-      font-size: 1rem;
       margin-bottom: 6px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.04em;
     }
-    .popup-sub { font-size: 13px; color: var(--text-soft); margin-bottom: 10px; }
+    .popup-sub {
+      margin-bottom: 10px;
+      color: var(--text-soft);
+      font-size: 0.84rem;
+    }
     .popup-metrics {
-      display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
       margin-bottom: 10px;
     }
-    .popup-kv { background: var(--surface-low); border-radius: 12px; padding: 8px 10px; }
-    .popup-kv .k { font-size: 10px; color: var(--text-soft); text-transform: uppercase; font-weight: 800; letter-spacing: 0.08em; }
-    .popup-kv .v { color: var(--primary); font-weight: 800; font-size: 13px; }
+    .popup-kv {
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .popup-kv .k {
+      color: var(--text-faint);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+    }
+    .popup-kv .v {
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.82rem;
+      letter-spacing: -0.02em;
+    }
     details.popup-details summary {
       cursor: pointer;
-      font-weight: 800;
-      color: var(--secondary);
       margin: 10px 0 6px;
+      color: var(--accent-pink);
+      font-weight: 800;
     }
-    .popup-match { font-size: 12px; color: var(--text-soft); margin-top: 4px; }
+    .popup-match {
+      color: var(--text-soft);
+      font-size: 0.78rem;
+      margin-top: 4px;
+    }
 
+    .leaflet-container {
+      background: #081225;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+      background: rgba(6, 10, 22, 0.96);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow-soft);
+    }
+    .leaflet-control-zoom a {
+      background: rgba(6, 10, 22, 0.88);
+      color: var(--text);
+      border-bottom-color: rgba(255,255,255,0.08) !important;
+    }
+    .leaflet-control-zoom a:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+    }
+    .leaflet-control-attribution {
+      background: rgba(6, 10, 22, 0.76) !important;
+      color: var(--text-faint) !important;
+    }
+    .leaflet-control-attribution a {
+      color: var(--text-soft) !important;
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(12deg); }
+      to { transform: rotate(372deg); }
+    }
+    @keyframes spinReverse {
+      from { transform: rotate(-18deg); }
+      to { transform: rotate(-378deg); }
+    }
+    @keyframes pulseFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @media (max-width: 1380px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr) minmax(360px, 0.92fr);
+      }
+      .hero-stack {
+        grid-column: 1 / -1;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .hero-focus { min-height: 128px; }
+    }
     @media (max-width: 1180px) {
-      .layout, .hero-grid, .cards-grid, .schedule-grid, .calendar-wrap, .summary-grid, .insights-grid {
+      .app-shell {
         grid-template-columns: 1fr;
       }
-      .controls { grid-template-columns: 1fr 1fr; }
+      .sidebar {
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        gap: 20px;
+      }
+      .nav-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .workspace {
+        padding-top: 22px;
+      }
+      .hero,
+      .profile-layout,
+      .layout,
+      .panel-grid,
+      .schedule-grid,
+      .calendar-wrap {
+        grid-template-columns: 1fr;
+      }
+      .atlas-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
       .side-panel { position: static; }
+      .controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .hero-stack {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .profile-columns {
+        grid-template-columns: 1fr 1fr;
+      }
     }
-    @media (max-width: 760px) {
-      .shell { padding: 14px; }
-      .hero { padding: 24px; }
-      .controls { grid-template-columns: 1fr; }
-      .cards-grid { grid-template-columns: 1fr; }
-      .kv-grid { grid-template-columns: 1fr 1fr; }
-      #map { height: 430px; margin: 0 16px 16px; }
-      .section-head, .controls, .map-foot, .table-card, .schedules-card, .calendar-card, .insights-card, .summary-card { padding-left: 16px; padding-right: 16px; }
-      .section-head { padding-top: 18px; }
-      .map-card { min-height: auto; }
+    @media (max-width: 860px) {
+      .workspace {
+        padding: 18px 14px 28px;
+      }
+      .topbar {
+        flex-direction: column;
+      }
+      .topbar-status {
+        justify-content: flex-start;
+      }
+      .nav-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .hero-copy,
+      .hero-stack,
+      .venue-deck,
+      .profile-card {
+        padding: 18px;
+      }
+      .hero-visual {
+        min-height: 360px;
+        padding: 16px;
+      }
+      .hero-map {
+        min-height: 250px;
+      }
+      .controls {
+        grid-template-columns: 1fr;
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+      #map {
+        height: 430px;
+        margin-left: 18px;
+        margin-right: 18px;
+      }
+      .map-foot,
+      .map-card .section-head,
+      .table-card .section-head,
+      .insights-card .section-head,
+      .schedules-card .section-head,
+      .calendar-card .section-head,
+      .summary-card .section-head,
+      .table-card > div:last-child,
+      .calendar-card > div:last-child,
+      .summary-card > div:last-child,
+      .schedules-card > div:last-child,
+      .insights-card > div:last-child {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+      .cards-grid {
+        grid-auto-columns: minmax(260px, 86vw);
+      }
+      .profile-gallery,
+      .profile-columns,
+      .hero-stack {
+        grid-template-columns: 1fr;
+      }
+      .atlas-grid {
+        grid-template-columns: 1fr;
+      }
+      .atlas-facts,
+      .atlas-thumbs {
+        grid-template-columns: 1fr;
+      }
+      .fact-strip {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <section class="hero">
-      <div class="hero-grid">
-        <div>
-          <div class="eyebrow"><span class="dot"></span>Fort Drum travel intelligence · verified venue slate</div>
-          <h1>2026 FIFA World Cup<br>from Fort Drum.</h1>
-          <p>A polished planning dashboard centered on Fort Drum, New York. It focuses on the six venues you asked for, uses the confirmed 2026 venue assignments currently published by FIFA and FIFA’s official hospitality ecosystem, and separates realistic road trips from trips that are simply better by air.</p>
-        </div>
-        <div class="hero-metrics">
-          <div class="metric">
-            <div class="metric-value">6</div>
-            <div class="metric-label">Tracked venues</div>
-            <div class="metric-note">Philadelphia, NY/NJ, Toronto, Vancouver, Mexico City, Miami</div>
-          </div>
-          <div class="metric">
-            <div class="metric-value">39</div>
-            <div class="metric-label">Confirmed matches</div>
-            <div class="metric-note">Across the selected venues only</div>
-          </div>
-          <div class="metric">
-            <div class="metric-value">217 mi</div>
-            <div class="metric-label">Closest road trip</div>
-            <div class="metric-note">Toronto from Fort Drum</div>
-          </div>
-          <div class="metric">
-            <div class="metric-value">SYR</div>
-            <div class="metric-label">Primary flight gateway</div>
-            <div class="metric-note">NYC-area airports are noted where useful, including Newark</div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div>
+        <div class="brand-stack">
+          <div class="brand-mark">20<br>26</div>
+          <div>
+            <div class="brand-label">Fort Drum</div>
+            <div class="brand-sub">World Cup route lab</div>
           </div>
         </div>
+        <nav class="nav-list">
+          <a class="active" href="#overview">Overview</a>
+          <a href="#venues">Venues</a>
+          <a href="#profile-section">Gallery</a>
+          <a href="#map-section">Map</a>
+          <a href="#schedule-section">Schedule</a>
+          <a href="#calendar-section">Calendar</a>
+        </nav>
       </div>
-    </section>
+      <div class="sidebar-note">
+        <div class="sidebar-note-label">Origin point</div>
+        <div class="sidebar-note-value">Fort Drum, New York</div>
+        <p>Drive-first for Toronto, MetLife, and Philadelphia. Flights for Miami, Mexico City, and Vancouver.</p>
+      </div>
+    </aside>
 
-    <section class="layout">
-      <div class="card map-card">
+    <main class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="topbar-kicker">2026 host venue intelligence</p>
+          <h1>Fort Drum World Cup Planner</h1>
+        </div>
+        <div class="topbar-status">
+          <span>16 hosts in the atlas</span>
+          <span>6 venues in the route shortlist</span>
+          <span>39 confirmed matches in the planner</span>
+        </div>
+      </header>
+
+      <section class="hero" id="overview">
+        <div class="hero-copy">
+          <div class="eyebrow">Venue routing, city context, and real imagery</div>
+          <h2>Real venues. Real cities. Real travel logic.</h2>
+          <p>Actual stadium photography, city galleries, city history, and a Fort Drum route read that stays practical without feeling generic.</p>
+          <div class="hero-actions">
+            <a class="hero-btn primary" href="#venues">Open venue deck</a>
+            <a class="hero-btn secondary" href="#profile-section">Jump to gallery</a>
+          </div>
+          <div class="hero-rules">
+            <div><span class="rule-dot road"></span> Drive-first: Toronto, MetLife, and Philadelphia</div>
+            <div><span class="rule-dot air"></span> Flight-first: Miami, Mexico City, and Vancouver</div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="hero-map-head">
+            <div>
+              <span>Interactive shortlist map</span>
+              <h3>Actual venue positions across North America</h3>
+            </div>
+            <div class="hero-map-summary">6 live hosts</div>
+          </div>
+          <div id="heroMap" class="hero-map" aria-label="Interactive shortlist map"></div>
+          <div class="hero-map-foot">
+            <button class="hero-map-chip active" data-venue="toronto" type="button">Toronto</button>
+            <button class="hero-map-chip" data-venue="nynj" type="button">MetLife</button>
+            <button class="hero-map-chip" data-venue="philadelphia" type="button">Philly</button>
+            <button class="hero-map-chip" data-venue="miami" type="button">Miami</button>
+            <button class="hero-map-chip" data-venue="mexico-city" type="button">Mexico City</button>
+            <button class="hero-map-chip" data-venue="vancouver" type="button">Vancouver</button>
+          </div>
+          <div class="hero-map-note">Click a marker or venue chip and the profile, deck, route map, and schedule all lock onto that host.</div>
+        </div>
+
+        <div class="hero-stack">
+          <div class="metric-card cyan">
+            <div class="metric-label">Routed venues</div>
+            <div class="metric-value">6</div>
+            <div class="metric-note">Toronto, MetLife, Philadelphia, Miami, Mexico City, Vancouver</div>
+          </div>
+          <div class="metric-card pink">
+            <div class="metric-label">Confirmed matches</div>
+            <div class="metric-value">39</div>
+            <div class="metric-note">Every currently assigned game across the selected hosts</div>
+          </div>
+          <div class="hero-focus" id="heroBrief"></div>
+        </div>
+      </section>
+
+      <section class="venue-deck" id="venues">
         <div class="section-head">
           <div>
-            <h2 class="section-title">Interactive map</h2>
-            <p class="section-subtitle">Click any stadium marker for the venue profile, practical travel summary, next match, and the full confirmed stadium schedule.</p>
+            <h2 class="section-title">Shortlist venue deck</h2>
+            <p class="section-subtitle">The six hosts most worth routing from Fort Drum in detail. The active card drives the intelligence gallery, map state, and schedule highlight.</p>
           </div>
         </div>
+        <section class="cards-grid" id="cardsGrid"></section>
+      </section>
 
-        <div class="controls">
-          <div class="control">
-            <label for="sortSelect">Sort venues</label>
-            <select id="sortSelect">
-              <option value="distance">Shortest distance</option>
-              <option value="travelHours">Shortest travel time</option>
-              <option value="capacity">Highest stadium capacity</option>
-              <option value="earliest">Earliest match date</option>
-            </select>
+      <section class="profile-card" id="profile-section">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Selected venue intelligence</h2>
+            <p class="section-subtitle">Gallery, city history, stadium history, and local texture for the venue currently in focus.</p>
           </div>
-          <div class="control">
-            <label>Country filter</label>
-            <div class="country-pills">
-              <button class="pill active" data-country="All">All</button>
-              <button class="pill" data-country="United States">United States</button>
-              <button class="pill" data-country="Canada">Canada</button>
-              <button class="pill" data-country="Mexico">Mexico</button>
+        </div>
+        <div class="profile-layout" id="profilePanel"></div>
+      </section>
+
+      <section class="card atlas-section" id="atlas-section">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Full 2026 host venue atlas</h2>
+            <p class="section-subtitle">All 16 host venues for knowledge and reference. The detailed Fort Drum routing engine stays focused on the shortlist, but the atlas gives you the broader tournament landscape with deck-sourced photos and city cues.</p>
+          </div>
+        </div>
+        <div class="atlas-grid" id="atlasGrid"></div>
+      </section>
+
+      <section class="layout" id="map-section">
+        <div class="card map-card">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Focused Fort Drum route map</h2>
+              <p class="section-subtitle">This map stays locked on the six most actionable route candidates from Fort Drum. Use the host atlas above for the complete 16-venue reference layer.</p>
             </div>
           </div>
-          <div class="control">
-            <label>Travel rule</label>
-            <button class="filter-btn" id="modeBtn">Showing practical mode per venue</button>
+
+          <div class="controls">
+            <div class="control">
+              <label for="sortSelect">Sort venues</label>
+              <select id="sortSelect">
+                <option value="distance">Shortest distance</option>
+                <option value="travelHours">Shortest travel time</option>
+                <option value="capacity">Highest stadium capacity</option>
+                <option value="earliest">Earliest match date</option>
+              </select>
+            </div>
+            <div class="control">
+              <label>Country filter</label>
+              <div class="country-pills">
+                <button class="pill active" data-country="All">All</button>
+                <button class="pill" data-country="United States">United States</button>
+                <button class="pill" data-country="Canada">Canada</button>
+                <button class="pill" data-country="Mexico">Mexico</button>
+              </div>
+            </div>
+            <div class="control">
+              <label>Travel rule</label>
+              <button class="filter-btn" id="modeBtn">Showing practical mode per venue</button>
+            </div>
+            <div class="control">
+              <label>Calendar scope</label>
+              <button class="filter-btn" id="calendarBtn">All confirmed games at these six venues</button>
+            </div>
           </div>
-          <div class="control">
-            <label>Calendar scope</label>
-            <button class="filter-btn" id="calendarBtn">All confirmed games at these six venues</button>
+
+          <div id="map"></div>
+
+          <div class="map-foot">
+            <div class="legend"><span class="chip" style="background: var(--usa)"></span> United States</div>
+            <div class="legend"><span class="chip" style="background: var(--canada)"></span> Canada</div>
+            <div class="legend"><span class="chip" style="background: var(--mexico)"></span> Mexico</div>
+            <div class="legend"><span class="chip" style="background: var(--warning)"></span> Better by air</div>
+            <div class="legend"><span class="chip" style="background: var(--success)"></span> Strong road-trip option</div>
           </div>
         </div>
 
-        <div id="map"></div>
+        <aside class="card side-panel">
+          <div class="mini-card">
+            <h3>Ranked from Fort Drum</h3>
+            <div class="rank-list" id="rankList"></div>
+          </div>
 
-        <div class="map-foot">
-          <div class="legend"><span class="chip" style="background: var(--usa)"></span> United States</div>
-          <div class="legend"><span class="chip" style="background: var(--canada)"></span> Canada</div>
-          <div class="legend"><span class="chip" style="background: var(--mexico)"></span> Mexico</div>
-          <div class="legend"><span class="chip" style="background: var(--warning)"></span> Better by air</div>
-          <div class="legend"><span class="chip" style="background: var(--success)"></span> Good road-trip candidate</div>
-        </div>
-      </div>
+          <div class="mini-card">
+            <h3>Best options for you</h3>
+            <div class="best-grid" id="bestGrid"></div>
+          </div>
 
-      <aside class="card side-panel">
-        <div class="mini-card">
-          <h3>Ranked from Fort Drum</h3>
-          <div class="rank-list" id="rankList"></div>
-        </div>
+          <div class="mini-card">
+            <h3>Travel logic</h3>
+            <p class="note"><strong>Road trips:</strong> Toronto, MetLife, and Philadelphia are still the cleanest plays if you want mileage that makes sense from Fort Drum.</p>
+            <p class="note"><strong>Flight trips:</strong> Miami, Vancouver, and Mexico City earn their place because the host cities and match upside justify a real travel day.</p>
+            <p class="note"><strong>Border note:</strong> Toronto wins on speed and value, but it still depends on documents and crossing times.</p>
+          </div>
+        </aside>
+      </section>
 
-        <div class="mini-card">
-          <h3>Best options for you</h3>
-          <div class="best-grid" id="bestGrid"></div>
-        </div>
+      <section class="panel-grid">
+        <section class="card table-card" id="comparison-section">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Comparison table</h2>
+              <p class="section-subtitle">The fast scan: capacity, travel demand, match count, and the first date in market.</p>
+            </div>
+          </div>
+          <div style="overflow:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Venue</th>
+                  <th>City</th>
+                  <th>Country</th>
+                  <th>Capacity</th>
+                  <th>Distance from Fort Drum</th>
+                  <th>Estimated travel time</th>
+                  <th>Mode</th>
+                  <th>First match</th>
+                  <th>Matches</th>
+                </tr>
+              </thead>
+              <tbody id="comparisonBody"></tbody>
+            </table>
+          </div>
+        </section>
 
-        <div class="mini-card">
-          <h3>Travel logic</h3>
-          <p class="note"><strong>Road trips:</strong> Toronto, MetLife, and Philadelphia are treated as drive-first options.</p>
-          <p class="note"><strong>Flights:</strong> Miami, Vancouver, and Mexico City are treated as flight-first options. Syracuse is the default gateway from Fort Drum, while Newark or other NYC-area airports are noted where they improve long-haul options.</p>
-          <p class="note"><strong>Border note:</strong> Toronto is the best quick international play, but it still depends on your border crossing timing and documents.</p>
-        </div>
-      </aside>
-    </section>
+        <section class="card insights-card" id="insights-section">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Travel insights from Fort Drum</h2>
+              <p class="section-subtitle">The blunt version. This is where convenience, city energy, and tournament upside actually get weighed together.</p>
+            </div>
+          </div>
+          <div class="insights-grid">
+            <div class="insight">
+              <h3>Toronto is the high-value quick strike</h3>
+              <p class="note">Closest host, real international energy, and manageable mileage from Fort Drum. It feels bigger than the drive suggests.</p>
+            </div>
+            <div class="insight">
+              <h3>MetLife is the cleanest U.S.-only flex</h3>
+              <p class="note">Straight domestic routing, the final on the board, and enough match volume to justify multiple trip shapes.</p>
+            </div>
+            <div class="insight">
+              <h3>Philadelphia stays realistic</h3>
+              <p class="note">Still road-trip territory, but it works best as a more intentional weekend move rather than a casual one-day run.</p>
+            </div>
+            <div class="insight">
+              <h3>Miami, Mexico City, and Vancouver are worth flying only if the city matters</h3>
+              <p class="note">Those are experience plays. Do them because the city, the culture, or the bracket draw is worth the airfare and the extra day.</p>
+            </div>
+          </div>
+          <div class="footnote">Drive venues are treated as road-trip estimates from Fort Drum. Flight-first venues are practical door-to-door estimates via Syracuse, with NYC-area airports noted where they improve the route. Real-world traffic, border waits, and airline schedules will move the exact number.</div>
+        </section>
+      </section>
 
-    <section class="cards-grid" id="cardsGrid"></section>
+      <section class="card schedules-card" id="schedule-section">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Match schedule by venue</h2>
+            <p class="section-subtitle">Every confirmed match currently assigned to the six stadiums in this dashboard. Select a venue above and its schedule block lights up here too.</p>
+          </div>
+        </div>
+        <div class="schedule-grid" id="scheduleGrid"></div>
+      </section>
 
-    <section class="card table-card">
-      <div class="section-head" style="padding:0 0 18px;">
-        <div>
-          <h2 class="section-title">Comparison table</h2>
-          <p class="section-subtitle">Side-by-side comparison of the included venues, sorted live by the controls above.</p>
-        </div>
-      </div>
-      <div style="overflow:auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>Venue</th>
-              <th>City</th>
-              <th>Country</th>
-              <th>Capacity</th>
-              <th>Distance from Fort Drum</th>
-              <th>Estimated travel time</th>
-              <th>Mode</th>
-              <th>First match</th>
-              <th>Matches</th>
-            </tr>
-          </thead>
-          <tbody id="comparisonBody"></tbody>
-        </table>
-      </div>
-    </section>
+      <section class="panel-grid">
+        <section class="card calendar-card" id="calendar-section">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Calendar of selected-venue games</h2>
+              <p class="section-subtitle">A month-by-month planner that rolls every confirmed game at the six chosen hosts into one chronological view.</p>
+            </div>
+          </div>
+          <div class="calendar-wrap" id="calendarWrap"></div>
+        </section>
 
-    <section class="card schedules-card">
-      <div class="section-head" style="padding:0 0 18px;">
-        <div>
-          <h2 class="section-title">Match schedule by venue</h2>
-          <p class="section-subtitle">Every confirmed match currently assigned to the six stadiums in this dashboard. No invented opponents. If a side is not fixed yet, it stays labeled as TBD or by official fixture code.</p>
-        </div>
-      </div>
-      <div class="schedule-grid" id="scheduleGrid"></div>
-    </section>
-
-    <section class="card calendar-card">
-      <div class="section-head" style="padding:0 0 18px;">
-        <div>
-          <h2 class="section-title">Calendar of all selected-venue games</h2>
-          <p class="section-subtitle">Extra section requested: a calendar view that rolls every confirmed game at the six selected venues into one chronological planner.</p>
-        </div>
-      </div>
-      <div class="calendar-wrap" id="calendarWrap"></div>
-    </section>
-
-    <section class="card insights-card">
-      <div class="section-head" style="padding:0 0 18px;">
-        <div>
-          <h2 class="section-title">Travel insights from Fort Drum</h2>
-          <p class="section-subtitle">The blunt version. This is the part that helps you decide whether a venue is a same-day play, a weekend trip, or a real flight commitment.</p>
-        </div>
-      </div>
-      <div class="insights-grid">
-        <div class="insight">
-          <h3>Toronto is the high-value quick strike</h3>
-          <p class="note">It is the closest venue in this set, sits around a four-hour drive from Fort Drum, and gives you a real international World Cup trip without turning it into a full expedition. The catch is the border, not the mileage.</p>
-        </div>
-        <div class="insight">
-          <h3>MetLife is the cleanest U.S.-only play</h3>
-          <p class="note">It is not the absolute closest, but it is a straightforward domestic trip with eight matches including the final. If you want the biggest upside without leaving the U.S., this is the move.</p>
-        </div>
-        <div class="insight">
-          <h3>Philadelphia is still realistic</h3>
-          <p class="note">It is a longer drive than MetLife, but still road-trip territory. It gives you six matches and can make sense if the fixture you want lands there instead of New Jersey.</p>
-        </div>
-        <div class="insight">
-          <h3>Miami, Vancouver, and Mexico City are flight trips</h3>
-          <p class="note">These are not “maybe I’ll just drive it” options unless you enjoy suffering. Miami is the easiest of the three by air from Syracuse. Vancouver and Mexico City are worth it for marquee value, but they are real travel days.</p>
-        </div>
-      </div>
-      <div class="footnote">Travel times for drive venues are treated as road-trip estimates from Fort Drum. Travel times for flight-first venues are practical door-to-door estimates using Syracuse as the primary local gateway and NYC-area airports, including Newark, where that helps. Expect real-world variation from traffic, border wait times, flight schedules, and airport transfer time.</div>
-    </section>
-
-    <section class="card summary-card">
-      <div class="section-head" style="padding:0 0 18px;">
-        <div>
-          <h2 class="section-title">Final recommendation summary</h2>
-          <p class="section-subtitle">Answers to the exact decision questions you asked.</p>
-        </div>
-      </div>
-      <div class="summary-grid" id="summaryGrid"></div>
-    </section>
+        <section class="card summary-card" id="summary-section">
+          <div class="section-head">
+            <div>
+              <h2 class="section-title">Final recommendation summary</h2>
+              <p class="section-subtitle">The direct answers to the decisions that actually matter.</p>
+            </div>
+          </div>
+          <div class="summary-grid" id="summaryGrid"></div>
+        </section>
+      </section>
+    </main>
   </div>
 
   <script>
@@ -977,7 +2131,7 @@
         distanceMiles: 2237,
         distanceType: 'air',
         travelHours: 11.8,
-        travelLabel: 'About 11.5–12h total via Syracuse',
+        travelLabel: 'About 11.5-12h total via Syracuse',
         travelMode: 'Better by air',
         practicalClass: 'air',
         travelNote: 'Vancouver is excellent if you want the west-coast World Cup experience, but from Fort Drum this is absolutely a flight trip.',
@@ -1002,19 +2156,586 @@
       mexico: getComputedStyle(document.documentElement).getPropertyValue('--mexico').trim()
     };
 
+    const venueProfiles = {
+      toronto: {
+        opened: '2007',
+        cityCue: 'Lake Ontario edge',
+        routeFeel: 'Passport weekender',
+        lead: 'Toronto gives you the cleanest international jump from Fort Drum: major-city energy, lakefront light, and a stadium that still feels built for soccer.',
+        cityHistory: 'Toronto grew from a lakeside colonial settlement into Canada\'s largest city and the commercial anchor of Ontario. The city\'s scale is matched by neighborhood diversity, waterfront reinvention, and a skyline that feels unmistakably global.',
+        stadiumHistory: 'BMO Field opened in 2007 on the old Exhibition Stadium site and became the home of Toronto FC and the Argonauts. Expansions pushed it into true major-event territory without losing the tighter, supporter-driven atmosphere that suits tournament nights.',
+        localAngle: 'If you want the fastest border-crossing flex with real host-city payoff, this is the move. You get skyline views, waterfront walks, and a venue that feels closer to football culture than oversized NFL scale.',
+        gallery: [
+          {
+            src: 'assets/deck/image-5-3.jpeg',
+            label: 'Venue photo',
+            title: 'BMO Field',
+            alt: 'BMO Field in Toronto'
+          },
+          {
+            src: 'assets/deck/image-5-5.jpeg',
+            label: 'City skyline',
+            title: 'CN Tower skyline',
+            alt: 'Toronto skyline with the CN Tower'
+          },
+          {
+            src: 'assets/deck/image-5-6.jpeg',
+            label: 'City texture',
+            title: 'Toronto waterfront',
+            alt: 'Toronto waterfront'
+          }
+        ]
+      },
+      nynj: {
+        opened: '2010',
+        cityCue: 'Meadowlands / NYC',
+        routeFeel: 'Big-stage domestic run',
+        lead: 'MetLife is the cleanest way to chase maximum tournament upside without leaving the United States.',
+        cityHistory: 'East Rutherford is a small Meadowlands borough, but the real pull is the metro scale wrapped around it. You are sitting on the edge of the New York region, where a local game trip can turn into skyline views, rail links, and one of the densest urban systems in North America.',
+        stadiumHistory: 'MetLife Stadium opened in 2010 to replace Giants Stadium and became the shared home of the Jets and Giants. It was built at modern mega-venue scale and is already positioned as the biggest domestic prize on this board because it hosts the 2026 final.',
+        localAngle: 'This is the strongest domestic flex if you care about bracket upside and city spillover. You get Meadowlands ease on game day and the New York skyline as the cultural add-on.',
+        gallery: [
+          {
+            src: 'assets/deck/image-18-1.jpeg',
+            label: 'Venue photo',
+            title: 'MetLife Stadium',
+            alt: 'Aerial view of MetLife Stadium'
+          },
+          {
+            src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg/1280px-View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg',
+            label: 'Metro backdrop',
+            title: 'New York City skyline',
+            alt: 'New York City skyline with the Empire State Building'
+          },
+          {
+            src: 'assets/deck/image-18-6.jpeg',
+            label: 'Final host cue',
+            title: 'Final-stage atmosphere',
+            alt: 'MetLife Stadium final host context'
+          }
+        ]
+      },
+      philadelphia: {
+        opened: '2003',
+        cityCue: 'Founding-city texture',
+        routeFeel: 'Weekend drive',
+        lead: 'Philadelphia gives you a real host city with history on the walls and a venue that still sits inside road-trip territory.',
+        cityHistory: 'Philadelphia is one of the foundational cities of the United States and still carries that weight in its street grid, civic buildings, and museum core. It mixes deep national history with food, sports, and neighborhood culture that still feels specific instead of generic.',
+        stadiumHistory: 'Lincoln Financial Field opened in 2003 as part of the South Philadelphia sports complex. It was built for NFL scale, but it has already shown it can host big one-off events and international matches with the right level of occasion.',
+        localAngle: 'Philadelphia is the move if you want history, walkable city texture, and a slightly less overwhelming trip than the New York corridor. It feels substantial without becoming a full expedition.',
+        gallery: [
+          {
+            src: 'assets/deck/image-19-3.jpeg',
+            label: 'Venue photo',
+            title: 'Lincoln Financial Field',
+            alt: 'Aerial view of Lincoln Financial Field'
+          },
+          {
+            src: 'assets/deck/image-19-4.jpeg',
+            label: 'Stadium exterior',
+            title: 'Exterior approach',
+            alt: 'Exterior view of Lincoln Financial Field'
+          },
+          {
+            src: 'assets/deck/image-19-5.jpeg',
+            label: 'City skyline',
+            title: 'Philadelphia skyline',
+            alt: 'Philadelphia skyline'
+          }
+        ]
+      },
+      miami: {
+        opened: '1987',
+        cityCue: 'South Florida energy',
+        routeFeel: 'Warm-weather fly-in',
+        lead: 'Miami is the leisure-heavy host on this board: bright skyline, heat, nightlife, and a venue that makes sense only if the city itself is part of the payoff.',
+        cityHistory: 'Miami Gardens is a young city in Miami-Dade County, while the broader Miami area has grown into one of the United States\' most recognizable coastal metros. That wider South Florida mix of immigration, skyline growth, music, and waterfront culture is what gives this trip its real draw.',
+        stadiumHistory: 'Hard Rock Stadium opened in 1987 and has been repeatedly reworked to stay relevant across football, tennis, concerts, and global events. It has the kind of multi-event muscle that makes a World Cup stop feel polished rather than improvised.',
+        localAngle: 'This is the flight you take because the city feels like part of the event. If you want beaches, nightlife, and a warmer tournament weekend rather than pure convenience, Miami earns the airfare.',
+        gallery: [
+          {
+            src: 'assets/deck/image-17-1.jpeg',
+            label: 'Venue photo',
+            title: 'Hard Rock Stadium',
+            alt: 'Hard Rock Stadium in Miami Gardens'
+          },
+          {
+            src: 'assets/deck/image-17-2.jpeg',
+            label: 'Stadium interior',
+            title: 'Match-day bowl',
+            alt: 'Interior of Hard Rock Stadium'
+          },
+          {
+            src: 'assets/deck/image-17-3.jpeg',
+            label: 'City skyline',
+            title: 'Miami skyline',
+            alt: 'Miami skyline'
+          }
+        ]
+      },
+      'mexico-city': {
+        opened: '1966',
+        cityCue: 'High-altitude megacity',
+        routeFeel: 'Marquee long-haul',
+        lead: 'Mexico City is the biggest cultural swing on the board: altitude, scale, football history, and one of the most famous stadiums in the sport.',
+        cityHistory: 'Mexico City stands on the layered ground of Tenochtitlan and grew into the country\'s capital, largest city, and cultural center. It feels enormous because it is: dense, high-altitude, historically charged, and still central to finance, food, art, and politics in Mexico.',
+        stadiumHistory: 'Estadio Azteca opened in 1966 and became one of football\'s canonical stages. Its scale, altitude, and history give it a gravity that few other venues can match, which is why it still reads as a pilgrimage venue instead of just another host stadium.',
+        localAngle: 'You do this trip for the sense of occasion. The city is vast, the football history is real, and the venue carries more myth than convenience.',
+        gallery: [
+          {
+            src: 'assets/deck/image-7-3.jpeg',
+            label: 'Venue photo',
+            title: 'Estadio Azteca',
+            alt: 'Interior view of Estadio Azteca'
+          },
+          {
+            src: 'assets/deck/image-7-4.jpeg',
+            label: 'Stadium exterior',
+            title: 'Azteca exterior',
+            alt: 'Exterior of Estadio Azteca'
+          },
+          {
+            src: 'assets/deck/image-7-5.jpeg',
+            label: 'City skyline',
+            title: 'Mexico City skyline',
+            alt: 'Mexico City skyline'
+          }
+        ]
+      },
+      vancouver: {
+        opened: '1983',
+        cityCue: 'Pacific mountain frame',
+        routeFeel: 'West coast flight',
+        lead: 'Vancouver is the far-west option: polished waterfront, mountain backdrop, and a stadium that drops you into a very different version of the tournament.',
+        cityHistory: 'Vancouver grew as a Pacific port city and remains one of Canada\'s most outward-facing urban centers. Water, mountains, immigration, and Pacific trade give it a tone that feels very different from the eastern hosts in this planner.',
+        stadiumHistory: 'BC Place opened in 1983 and later underwent a major roof transformation that helped modernize the building without stripping away its landmark status on False Creek. It already knows how to sit inside a skyline instead of outside the city.',
+        localAngle: 'This is not the efficient pick. It is the dramatic one. You go because the Pacific setting, mountain edge, and west-coast mood are part of the story you want from the tournament.',
+        gallery: [
+          {
+            src: 'assets/deck/image-4-3.jpeg',
+            label: 'Venue photo',
+            title: 'BC Place',
+            alt: 'BC Place in Vancouver'
+          },
+          {
+            src: 'assets/deck/image-4-4.jpeg',
+            label: 'Stadium exterior',
+            title: 'BC Place exterior',
+            alt: 'Exterior view of BC Place'
+          },
+          {
+            src: 'assets/deck/image-4-5.jpeg',
+            label: 'City skyline',
+            title: 'Vancouver skyline',
+            alt: 'Vancouver skyline'
+          }
+        ]
+      }
+    };
+
+    const hostAtlas = [
+      {
+        id: 'vancouver',
+        stadium: 'BC Place',
+        city: 'Vancouver, British Columbia',
+        country: 'Canada',
+        code: 'canada',
+        badge: 'Shortlist',
+        cover: 'assets/deck/image-4-3.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-4-4.jpeg', label: 'Stadium exterior' },
+          { src: 'assets/deck/image-4-5.jpeg', label: 'Vancouver skyline' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '48,821' },
+          { label: 'Roof', value: 'Retractable' },
+          { label: 'Setting', value: 'Downtown' }
+        ],
+        note: 'Walkable downtown host with mountains and waterfront surrounding the bowl. Vancouver is compact, scenic, and reads like a destination trip instead of a routine stadium stop.'
+      },
+      {
+        id: 'toronto',
+        stadium: 'BMO Field',
+        city: 'Toronto, Ontario',
+        country: 'Canada',
+        code: 'canada',
+        badge: 'Shortlist',
+        cover: 'assets/deck/image-5-3.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-5-5.jpeg', label: 'CN Tower skyline' },
+          { src: 'assets/deck/image-5-6.jpeg', label: 'Toronto waterfront' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '44,315' },
+          { label: 'Type', value: 'Open-air' },
+          { label: 'Status', value: 'Renovating' }
+        ],
+        note: 'Toronto is the smallest World Cup venue in the field, but the city context is huge: waterfront skyline, global neighborhoods, and the cleanest international jump from Fort Drum.'
+      },
+      {
+        id: 'mexico-city',
+        stadium: 'Estadio Azteca',
+        city: 'Mexico City',
+        country: 'Mexico',
+        code: 'mexico',
+        badge: 'Shortlist',
+        cover: 'assets/deck/image-7-3.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-7-4.jpeg', label: 'Stadium exterior' },
+          { src: 'assets/deck/image-7-5.jpeg', label: 'Mexico City skyline' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '72,766' },
+          { label: 'Altitude', value: '7,349 ft' },
+          { label: 'Legacy', value: '3 World Cups' }
+        ],
+        note: 'The opening-match host and one of the most mythic football venues on the planet. Mexico City adds altitude, scale, and real tournament gravity to the venue list.'
+      },
+      {
+        id: 'guadalajara',
+        stadium: 'Estadio Akron',
+        city: 'Guadalajara (Zapopan)',
+        country: 'Mexico',
+        code: 'mexico',
+        badge: 'Reference',
+        cover: 'assets/deck/image-8-1.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-8-3.jpeg', label: 'Volcano-inspired shell' },
+          { src: 'assets/deck/image-8-4.jpeg', label: 'Guadalajara city view' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '44,330' },
+          { label: 'Type', value: 'Open-air' },
+          { label: 'Opened', value: '2011' }
+        ],
+        note: 'A modern bowl with a dramatic volcano-like outer form. Guadalajara brings one of Mexico\'s richest cultural identities into the tournament mix.'
+      },
+      {
+        id: 'monterrey',
+        stadium: 'Estadio BBVA',
+        city: 'Monterrey (Guadalupe)',
+        country: 'Mexico',
+        code: 'mexico',
+        badge: 'Reference',
+        cover: 'assets/deck/image-9-5.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-9-6.jpeg', label: 'Aerial view' },
+          { src: 'assets/deck/image-9-7.jpeg', label: 'Monterrey backdrop' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '50,113' },
+          { label: 'Type', value: 'Open-air' },
+          { label: 'Backdrop', value: 'Cerro peak' }
+        ],
+        note: 'One of the most visually striking stadiums in the tournament thanks to its mountain framing and sharply modern bowl design.'
+      },
+      {
+        id: 'atlanta',
+        stadium: 'Mercedes-Benz Stadium',
+        city: 'Atlanta, Georgia',
+        country: 'United States',
+        code: 'usa',
+        badge: 'Reference',
+        cover: 'assets/deck/image-11-1.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-11-2.jpeg', label: 'Stadium exterior' },
+          { src: 'assets/deck/image-11-3.jpeg', label: 'Atlanta skyline' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '67,382' },
+          { label: 'Roof', value: 'Pinwheel' },
+          { label: 'Feature', value: 'Halo board' }
+        ],
+        note: 'Atlanta adds an ultra-modern indoor venue and one of the strongest big-city backdrops in the American South.'
+      },
+      {
+        id: 'foxborough',
+        stadium: 'Gillette Stadium',
+        city: 'Foxborough, Massachusetts',
+        country: 'United States',
+        code: 'usa',
+        badge: 'Reference',
+        cover: 'assets/deck/image-12-3.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-12-5.jpeg', label: 'Boston skyline' },
+          { src: 'assets/deck/image-12-6.jpeg', label: 'Charles River cityscape' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '63,815' },
+          { label: 'Type', value: 'Open-air' },
+          { label: 'Metro', value: 'Boston area' }
+        ],
+        note: 'A Boston-metro host that trades downtown placement for a classic New England football environment tied to a major regional city.'
+      },
+      {
+        id: 'arlington',
+        stadium: 'AT&T Stadium',
+        city: 'Arlington, Texas',
+        country: 'United States',
+        code: 'usa',
+        badge: 'Reference',
+        cover: 'assets/deck/image-13-3.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-13-4.jpeg', label: 'Dallas skyline' },
+          { src: 'assets/deck/image-13-5.jpeg', label: 'Interior scale' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '70,122' },
+          { label: 'Roof', value: 'Retractable' },
+          { label: 'Feature', value: 'Mega board' }
+        ],
+        note: 'AT&T Stadium is one of the largest indoor sports environments anywhere, backed by the scale and sprawl of the Dallas-Fort Worth metroplex.'
+      },
+      {
+        id: 'houston',
+        stadium: 'NRG Stadium',
+        city: 'Houston, Texas',
+        country: 'United States',
+        code: 'usa',
+        badge: 'Reference',
+        cover: 'assets/deck/image-14-5.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-14-7.jpeg', label: 'Houston downtown' },
+          { src: 'assets/deck/image-14-8.jpeg', label: 'Houston at sunset' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '68,311' },
+          { label: 'Roof', value: 'Retractable' },
+          { label: 'Climate', value: 'Controlled' }
+        ],
+        note: 'Houston combines a climate-protected stadium with one of the largest and most diverse cities in the United States.'
+      },
+      {
+        id: 'kansas-city',
+        stadium: 'GEHA Field at Arrowhead Stadium',
+        city: 'Kansas City, Missouri',
+        country: 'United States',
+        code: 'usa',
+        badge: 'Reference',
+        cover: 'assets/deck/image-15-3.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-15-4.jpeg', label: 'Stadium exterior' },
+          { src: 'assets/deck/image-15-5.jpeg', label: 'Kansas City skyline' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '67,513' },
+          { label: 'Type', value: 'Open-air' },
+          { label: 'Reputation', value: 'Very loud' }
+        ],
+        note: 'Arrowhead brings one of the loudest atmospheres in American sports, plus a city identity built around barbecue, jazz, and fountains.'
+      },
+      {
+        id: 'inglewood',
+        stadium: 'SoFi Stadium',
+        city: 'Inglewood, California',
+        country: 'United States',
+        code: 'usa',
+        badge: 'Reference',
+        cover: 'assets/deck/image-16-3.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-16-5.jpeg', label: 'Downtown Los Angeles' },
+          { src: 'assets/deck/image-16-6.jpeg', label: 'L.A. cityscape' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '69,650' },
+          { label: 'Type', value: 'Semi-enclosed' },
+          { label: 'Cost', value: '$5.5B' }
+        ],
+        note: 'SoFi is the architectural flex of the tournament: expensive, futuristic, and embedded in the gravity of the Los Angeles metro area.'
+      },
+      {
+        id: 'miami',
+        stadium: 'Hard Rock Stadium',
+        city: 'Miami Gardens, Florida',
+        country: 'United States',
+        code: 'usa',
+        badge: 'Shortlist',
+        cover: 'assets/deck/image-17-1.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-17-2.jpeg', label: 'Stadium interior' },
+          { src: 'assets/deck/image-17-3.jpeg', label: 'Miami skyline' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '64,091' },
+          { label: 'Type', value: 'Open-air' },
+          { label: 'Climate', value: 'Tropical' }
+        ],
+        note: 'Miami is the glamour pick: warm weather, skyline energy, and a host city with strong Latin American cultural gravity.'
+      },
+      {
+        id: 'nynj',
+        stadium: 'MetLife Stadium',
+        city: 'East Rutherford, New Jersey',
+        country: 'United States',
+        code: 'usa',
+        badge: 'Shortlist',
+        cover: 'assets/deck/image-18-1.jpeg',
+        thumbs: [
+          { src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg/1280px-View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg', label: 'Manhattan skyline' },
+          { src: 'assets/deck/image-18-6.jpeg', label: 'Final host context' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '78,576' },
+          { label: 'Status', value: 'Final host' },
+          { label: 'Scale', value: 'Largest venue' }
+        ],
+        note: 'The tournament final lands here, which instantly makes MetLife the biggest single-stage play in the United States.'
+      },
+      {
+        id: 'philadelphia',
+        stadium: 'Lincoln Financial Field',
+        city: 'Philadelphia, Pennsylvania',
+        country: 'United States',
+        code: 'usa',
+        badge: 'Shortlist',
+        cover: 'assets/deck/image-19-3.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-19-4.jpeg', label: 'Stadium exterior' },
+          { src: 'assets/deck/image-19-5.jpeg', label: 'Philadelphia skyline' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '65,827' },
+          { label: 'Type', value: 'Open-air' },
+          { label: 'Mood', value: 'Intense fans' }
+        ],
+        note: 'Philadelphia offers a blunt, loud, history-heavy match-day feel. It is one of the better balance points between drive practicality and genuine city character.'
+      },
+      {
+        id: 'santa-clara',
+        stadium: 'Levi\'s Stadium',
+        city: 'Santa Clara, California',
+        country: 'United States',
+        code: 'usa',
+        badge: 'Reference',
+        cover: 'assets/deck/image-20-1.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-20-3.jpeg', label: 'San Francisco skyline' },
+          { src: 'assets/deck/image-20-4.jpeg', label: 'Bay sunset' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '69,391' },
+          { label: 'Type', value: 'Open-air' },
+          { label: 'Opened', value: '2014' }
+        ],
+        note: 'The Bay Area host pairs a modern Santa Clara venue with one of the most recognizable regional backdrops in American sport and tech culture.'
+      },
+      {
+        id: 'seattle',
+        stadium: 'Lumen Field',
+        city: 'Seattle, Washington',
+        country: 'United States',
+        code: 'usa',
+        badge: 'Reference',
+        cover: 'assets/deck/image-21-3.jpeg',
+        thumbs: [
+          { src: 'assets/deck/image-21-6.jpeg', label: 'Stadium exterior' },
+          { src: 'assets/deck/image-21-7.jpeg', label: 'Seattle skyline' }
+        ],
+        facts: [
+          { label: 'Capacity', value: '65,123' },
+          { label: 'Type', value: 'Partially covered' },
+          { label: 'Edge', value: 'Crowd noise' }
+        ],
+        note: 'Seattle brings one of the most intimidating sound environments in North America, backed by water, mountains, and a city with strong football culture.'
+      }
+    ];
+
+    const atlasContext = {
+      vancouver: {
+        cityStory: 'Vancouver emerged as a Pacific port and rail terminus, then grew into one of Canada\'s most internationally connected cities. Its downtown core is defined by water, glass towers, and a mountain backdrop that makes the place feel cinematic even before kickoff.',
+        stadiumStory: 'BC Place opened in 1983 and became a skyline landmark on False Creek. Its later roof overhaul helped turn it from a legacy dome into a modern major-event venue without losing its city-center identity.'
+      },
+      toronto: {
+        cityStory: 'Toronto evolved from a lakeside colonial settlement into Canada\'s financial and cultural heavyweight. Immigration, waterfront redevelopment, and dense neighborhoods give it a scale and variety that feel properly global for a World Cup stop.',
+        stadiumStory: 'BMO Field opened in 2007 on historic Exhibition Place land and was later expanded for larger international events. It stays more football-forward than most NFL-scale hosts, which helps it feel intimate even when the stakes rise.'
+      },
+      'mexico-city': {
+        cityStory: 'Mexico City sits on the layered ground of Tenochtitlan and carries centuries of political, cultural, and architectural weight. It is vast, elevated, and historically dense in a way few host cities anywhere can match.',
+        stadiumStory: 'Estadio Azteca opened in 1966 and belongs on the short list of iconic football venues worldwide. Two previous men\'s World Cup finals and the 2026 opening match give it myth as well as scale.'
+      },
+      guadalajara: {
+        cityStory: 'Guadalajara is one of Mexico\'s defining cultural capitals, associated with mariachi, tequila, and a strong regional identity that still feels distinct from the capital. The metro has grown fast, but it keeps a local character that reads immediately.',
+        stadiumStory: 'Estadio Akron opened in 2011 with a sculpted shell that makes it one of the more recognizable stadium forms in the tournament. It is newer than Mexico\'s other hosts and deliberately modern in tone.'
+      },
+      monterrey: {
+        cityStory: 'Monterrey built its identity around industry, business, and northern Mexican ambition. The surrounding mountains shape the skyline and give the city a harder, more dramatic visual profile than many other hosts.',
+        stadiumStory: 'Estadio BBVA opened in 2015 and immediately stood out for its clean modern bowl and mountain framing. It feels purpose-built for big-event television shots and major tournament atmosphere.'
+      },
+      atlanta: {
+        cityStory: 'Atlanta rose from a rail junction into one of the dominant metros of the American South, with influence across business, music, media, and Black culture. It feels expansive, fast-moving, and nationally important.',
+        stadiumStory: 'Mercedes-Benz Stadium opened in 2017 and is defined by its retractable pinwheel roof and giant halo video board. It is one of the few host venues that feels futuristic rather than simply large.'
+      },
+      foxborough: {
+        cityStory: 'Foxborough itself is small, but the host context is really greater Boston and eastern Massachusetts. That brings Revolutionary-era history, strong college-and-pro sports culture, and one of the most established urban regions in the United States.',
+        stadiumStory: 'Gillette Stadium opened in 2002 as the Patriots\' home and became a New England sports anchor. It is less urban than some hosts, but it carries proven event muscle and a big regional following.'
+      },
+      arlington: {
+        cityStory: 'Arlington sits inside the Dallas-Fort Worth metroplex, one of the largest and fastest-growing urban regions in the country. The wider area is defined by scale, highways, business growth, and a distinctly Texas sense of spectacle.',
+        stadiumStory: 'AT&T Stadium opened in 2009 and still reads like a mega-project: retractable roof, immense volume, and one of the biggest video boards in sports. It is built for excess and television impact.'
+      },
+      houston: {
+        cityStory: 'Houston grew through shipping, oil, medicine, and immigration into one of the most diverse major cities in the United States. Its scale feels horizontal and sprawling, but the cultural depth is real.',
+        stadiumStory: 'NRG Stadium opened in 2002 and helped define the modern retractable-roof American stadium model. For a summer World Cup, that climate control is not cosmetic; it materially changes the experience.'
+      },
+      'kansas-city': {
+        cityStory: 'Kansas City developed as a rail and livestock hub, then built a civic identity around jazz, barbecue, and fountains. It feels more regionally grounded than flashier host cities, which is part of its appeal.',
+        stadiumStory: 'Arrowhead opened in 1972 and remains one of the loudest, most reputation-heavy venues in North American sport. It is older than many hosts, but the atmosphere gives it a different kind of credibility.'
+      },
+      inglewood: {
+        cityStory: 'Inglewood sits within the gravitational pull of Los Angeles, one of the world\'s dominant entertainment and immigrant metros. The host-city experience here is less about one municipality and more about the scale of greater L.A.',
+        stadiumStory: 'SoFi Stadium opened in 2020 as an enormous privately financed venue complex with a translucent roof canopy and luxury-level presentation. It is the tournament\'s clearest architectural flex.'
+      },
+      miami: {
+        cityStory: 'The Miami area became a hemispheric crossroads shaped by migration from Latin America and the Caribbean, finance, tourism, and coastal development. That mix gives it a cultural heat and visual brightness few hosts can match.',
+        stadiumStory: 'Hard Rock Stadium opened in 1987 and has been repeatedly upgraded to stay relevant across football, tennis, concerts, and Formula 1-adjacent spectacle. It is a proven event machine rather than a one-purpose bowl.'
+      },
+      nynj: {
+        cityStory: 'East Rutherford is a Meadowlands municipality, but the real host backdrop is the New York metro region. That means skyline, transit, density, and one of the deepest urban ecosystems in North America sitting beside the stadium experience.',
+        stadiumStory: 'MetLife Stadium opened in 2010 on the old Giants Stadium site and was built at shared-NFL mega-scale. Hosting the 2026 final gives it the single biggest competitive stake in the entire U.S. venue field.'
+      },
+      philadelphia: {
+        cityStory: 'Philadelphia is one of the foundational cities of the United States and still carries that history in its streets, civic buildings, and museum core. It feels older, denser, and more textured than many newer host metros.',
+        stadiumStory: 'Lincoln Financial Field opened in 2003 in the South Philadelphia sports complex. It lacks the myth of Azteca or the spectacle of SoFi, but it delivers the hard-edged crowd energy that can make tournament matches feel raw.'
+      },
+      'santa-clara': {
+        cityStory: 'Santa Clara anchors a slice of Silicon Valley, while the broader Bay Area brings San Francisco\'s history, global recognition, and layered coastal geography into the story. The host context mixes tech wealth with one of America\'s most identifiable regions.',
+        stadiumStory: 'Levi\'s Stadium opened in 2014 with a cleaner, more contemporary profile than many older NFL venues. It is modern without being showy, which fits the Bay Area\'s more measured version of scale.'
+      },
+      seattle: {
+        cityStory: 'Seattle grew through logging, shipping, aviation, and technology into a city with strong global ties and a clear Pacific Northwest identity. Water, hills, and mountain views make even ordinary city shots feel atmospheric.',
+        stadiumStory: 'Lumen Field opened in 2002 and became famous for crowd noise and compact, stacked seating. It feels less bloated than some mega-venues and more directly tuned for intimidating football atmosphere.'
+      }
+    };
+
     let currentCountry = 'All';
     let currentSort = 'distance';
+    let activeVenueId = 'toronto';
 
     const map = L.map('map', { zoomControl: true, scrollWheelZoom: true }).setView([44.05, -75.76], 4.75);
+    const heroMap = L.map('heroMap', {
+      zoomControl: false,
+      scrollWheelZoom: false,
+      attributionControl: false,
+      dragging: true,
+      boxZoom: false,
+      doubleClickZoom: false,
+      keyboard: false
+    }).setView([40.5, -96], 3.25);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
+      subdomains: 'abcd',
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
     }).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19,
+      subdomains: 'abcd',
+      attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+    }).addTo(heroMap);
 
     const fortDrumIcon = L.divIcon({
       className: '',
-      html: '<div style="width:22px;height:22px;border-radius:999px;background:#111827;border:3px solid #fff;box-shadow:0 8px 18px rgba(0,0,0,.25)"></div>',
+      html: '<div style="width:22px;height:22px;border-radius:999px;background:#081225;border:3px solid #7bf0ff;box-shadow:0 0 0 10px rgba(123,240,255,.12),0 10px 22px rgba(0,0,0,.35)"></div>',
       iconSize: [22, 22],
       iconAnchor: [11, 11]
     });
@@ -1024,6 +2745,18 @@
 
     const mapMarkers = new Map();
     const mapLines = new Map();
+    const heroMarkers = new Map();
+
+    function makeHeroMarkerStyle(venue, active = false) {
+      return {
+        radius: active ? 9.5 : 7,
+        fillColor: countryFill[venue.code],
+        color: '#f6f8ff',
+        weight: active ? 2.4 : 1.8,
+        opacity: 1,
+        fillOpacity: 1
+      };
+    }
 
     function makeMarkerIcon(code) {
       const color = countryFill[code];
@@ -1100,12 +2833,21 @@
         dashArray: venue.practicalClass === 'air' ? '10,8' : null
       }).addTo(map);
       mapLines.set(venue.id, line);
+
+      const heroMarker = L.circleMarker([venue.lat, venue.lng], makeHeroMarkerStyle(venue, venue.id === activeVenueId)).addTo(heroMap);
+      heroMarker.bindPopup(popupHtml(venue));
+      heroMarker.on('click', () => focusVenue(venue.id));
+      heroMarkers.set(venue.id, heroMarker);
+    });
+
+    heroMap.fitBounds(L.latLngBounds(venues.map(venue => [venue.lat, venue.lng])), {
+      padding: [24, 24]
     });
 
     function buildRankList(list) {
       const rankList = document.getElementById('rankList');
       rankList.innerHTML = list.map((venue, idx) => `
-        <div class="rank-item" data-id="${venue.id}">
+        <div class="rank-item ${activeVenueId === venue.id ? 'active' : ''}" data-id="${venue.id}">
           <div class="rank-num">${idx + 1}</div>
           <div>
             <div class="rank-name">${venue.stadium}</div>
@@ -1153,22 +2895,213 @@
       `;
     }
 
+    function buildHeroBrief() {
+      const venue = venues.find(v => v.id === activeVenueId) || venues[0];
+      const profile = venueProfiles[venue.id];
+      const next = firstMatch(venue);
+      document.getElementById('heroBrief').innerHTML = `
+        <div class="hero-focus-media">
+          <img src="${profile.gallery[0].src}" alt="${profile.gallery[0].alt}" loading="lazy">
+        </div>
+        <div class="hero-focus-copy">
+          <h3>${venue.stadium}</h3>
+          <p>${profile.lead}</p>
+          <p style="margin-top:8px;"><strong>${next.code}</strong> · ${next.fixture} · ${fmtDateShort(next.date)}</p>
+        </div>
+      `;
+    }
+
+    function buildProfilePanel() {
+      const venue = venues.find(v => v.id === activeVenueId) || venues[0];
+      const profile = venueProfiles[venue.id];
+      document.getElementById('profilePanel').innerHTML = `
+        <div class="profile-gallery">
+          <figure class="lead-shot">
+            <img src="${profile.gallery[0].src}" alt="${profile.gallery[0].alt}" loading="lazy">
+            <figcaption class="gallery-caption">
+              <span>${profile.gallery[0].label}</span>
+              <strong>${profile.gallery[0].title}</strong>
+            </figcaption>
+          </figure>
+          <div class="gallery-column">
+            ${profile.gallery.slice(1, 3).map(item => `
+              <figure class="gallery-shot">
+                <img src="${item.src}" alt="${item.alt}" loading="lazy">
+                <figcaption class="gallery-caption">
+                  <span>${item.label}</span>
+                  <strong>${item.title}</strong>
+                </figcaption>
+              </figure>
+            `).join('')}
+          </div>
+        </div>
+        <div class="profile-copy">
+          <div class="profile-kicker">${venue.city} · ${venue.country}</div>
+          <h3 class="profile-title">${venue.stadium}</h3>
+          <p class="section-subtitle">${profile.lead}</p>
+          <div class="fact-strip">
+            <div class="fact-chip">
+              <span>Opened</span>
+              <strong>${profile.opened}</strong>
+            </div>
+            <div class="fact-chip">
+              <span>City cue</span>
+              <strong>${profile.cityCue}</strong>
+            </div>
+            <div class="fact-chip">
+              <span>Trip feel</span>
+              <strong>${profile.routeFeel}</strong>
+            </div>
+          </div>
+          <div class="profile-columns">
+            <article class="story-block">
+              <h3>City snapshot</h3>
+              <p>${profile.cityHistory}</p>
+            </article>
+            <article class="story-block">
+              <h3>Stadium story</h3>
+              <p>${profile.stadiumHistory}</p>
+            </article>
+            <article class="story-block">
+              <h3>Why it matters</h3>
+              <p>${profile.localAngle}</p>
+            </article>
+            <article class="story-block">
+              <h3>Fort Drum read</h3>
+              <p>${venue.travelNote}</p>
+            </article>
+          </div>
+          <div class="photo-credit">Selected venue photography uses curated deck assets plus Wikimedia images where needed for additional city context.</div>
+        </div>
+      `;
+    }
+
+    function getAtlasColumnCount() {
+      if (window.innerWidth <= 860) return 1;
+      if (window.innerWidth <= 1180) return 2;
+      return 3;
+    }
+
+    function buildHostAtlasCard(host) {
+      return `
+        <article class="atlas-card">
+          <div class="atlas-cover">
+            <img src="${host.cover}" alt="${host.stadium}" loading="lazy">
+            <div class="atlas-chip-row">
+              <span class="atlas-chip ${host.code}">${host.country}</span>
+              <span class="atlas-capacity">${host.badge}</span>
+            </div>
+            <div class="atlas-headline">
+              <p>${host.city}</p>
+              <h3>${host.stadium}</h3>
+            </div>
+          </div>
+          <div class="atlas-body">
+            <p class="atlas-location">${host.badge === 'Shortlist' ? 'Part of the active Fort Drum shortlist.' : 'Added as full-tournament reference.'}</p>
+            <div class="atlas-facts">
+              ${host.facts.map(fact => `
+                <div class="atlas-fact">
+                  <span>${fact.label}</span>
+                  <strong>${fact.value}</strong>
+                </div>
+              `).join('')}
+            </div>
+            <p class="atlas-note">${host.note}</p>
+            <div class="atlas-story-grid">
+              <article class="atlas-story">
+                <span>City history</span>
+                <p>${atlasContext[host.id].cityStory}</p>
+              </article>
+              <article class="atlas-story">
+                <span>Venue story</span>
+                <p>${atlasContext[host.id].stadiumStory}</p>
+              </article>
+            </div>
+            <div class="atlas-thumbs">
+              ${host.thumbs.map(item => `
+                <div class="atlas-thumb">
+                  <img src="${item.src}" alt="${item.label} for ${host.stadium}" loading="lazy">
+                  <span>${item.label}</span>
+                </div>
+              `).join('')}
+            </div>
+            ${venues.some(venue => venue.id === host.id) ? `<button class="atlas-jump" type="button" data-id="${host.id}">Open this host in the detailed Fort Drum planner</button>` : ''}
+          </div>
+        </article>`;
+    }
+
+    function buildHostAtlas() {
+      const columnCount = getAtlasColumnCount();
+      const columns = Array.from({ length: columnCount }, () => []);
+      const weights = Array(columnCount).fill(0);
+
+      hostAtlas.forEach(host => {
+        const weight = host.note.length + atlasContext[host.id].cityStory.length + atlasContext[host.id].stadiumStory.length + host.thumbs.length * 40;
+        const targetIndex = weights.indexOf(Math.min(...weights));
+        columns[targetIndex].push(host);
+        weights[targetIndex] += weight;
+      });
+
+      document.getElementById('atlasGrid').innerHTML = columns.map(column => `
+        <div class="atlas-column">
+          ${column.map(buildHostAtlasCard).join('')}
+        </div>
+      `).join('');
+      document.querySelectorAll('.atlas-jump').forEach(btn => {
+        btn.addEventListener('click', () => {
+          focusVenue(btn.dataset.id);
+          document.getElementById('profile-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    }
+
+    function syncActiveState() {
+      document.querySelectorAll('.stadium-card').forEach(el => {
+        el.classList.toggle('active', el.dataset.id === activeVenueId);
+      });
+      document.querySelectorAll('.rank-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.id === activeVenueId);
+      });
+      document.querySelectorAll('.venue-schedule').forEach(el => {
+        el.classList.toggle('active', el.dataset.id === activeVenueId);
+      });
+      document.querySelectorAll('.hero-map-chip').forEach(el => {
+        el.classList.toggle('active', el.dataset.venue === activeVenueId);
+      });
+      heroMarkers.forEach((marker, id) => {
+        const venue = venues.find(item => item.id === id);
+        marker.setStyle(makeHeroMarkerStyle(venue, id === activeVenueId));
+      });
+    }
+
     function buildCards(list) {
       document.getElementById('cardsGrid').innerHTML = list.map(venue => {
         const next = firstMatch(venue);
+        const profile = venueProfiles[venue.id];
         return `
-          <article class="card stadium-card" data-id="${venue.id}">
-            <div class="country-badge ${venue.code}">${venue.country}</div>
-            <h3>${venue.stadium}</h3>
-            <div class="stadium-meta">${venue.city} · FIFA tournament name: ${venue.fifaName}</div>
-            <div class="kv-grid">
-              <div class="kv"><div class="k">Capacity</div><div class="v">${venue.capacity.toLocaleString()}</div></div>
-              <div class="kv"><div class="k">Distance</div><div class="v">${venue.distanceMiles.toLocaleString()} ${venue.distanceType === 'road' ? 'road mi' : 'air mi'}</div></div>
-              <div class="kv"><div class="k">Travel time</div><div class="v">${venue.travelLabel}</div></div>
-              <div class="kv"><div class="k">Next match</div><div class="v">${fmtDateShort(next.date)}</div></div>
+          <article class="stadium-card ${activeVenueId === venue.id ? 'active' : ''}" data-id="${venue.id}">
+            <div class="stadium-art">
+              <img src="${profile.gallery[0].src}" alt="${profile.gallery[0].alt}" loading="lazy">
+              <div class="stadium-overlay"></div>
+              <div class="stadium-topline">
+                <span class="country-badge ${venue.code}">${venue.country}</span>
+                <span class="stadium-distance">${venue.distanceMiles.toLocaleString()} ${venue.distanceType === 'road' ? 'mi road' : 'mi air'}</span>
+              </div>
+              <div class="stadium-headline">
+                <p>${venue.city}</p>
+                <h3>${venue.stadium}</h3>
+              </div>
             </div>
-            <p class="note"><strong>${next.code} · ${next.stage}</strong><br>${next.fixture}</p>
-            <p class="note" style="margin-top:10px;">${venue.travelNote}</p>
+            <div class="stadium-body">
+              <div class="stadium-meta">FIFA tournament name: ${venue.fifaName}</div>
+              <div class="kv-grid">
+                <div class="kv"><div class="k">Capacity</div><div class="v">${venue.capacity.toLocaleString()}</div></div>
+                <div class="kv"><div class="k">Travel</div><div class="v">${venue.travelLabel}</div></div>
+                <div class="kv"><div class="k">Mode</div><div class="v">${venue.travelMode}</div></div>
+                <div class="kv"><div class="k">Next match</div><div class="v">${fmtDateShort(next.date)}</div></div>
+              </div>
+              <p class="note"><strong>${next.code} · ${next.stage}</strong><br>${next.fixture}</p>
+            </div>
           </article>`;
       }).join('');
       document.querySelectorAll('.stadium-card').forEach(el => {
@@ -1194,7 +3127,7 @@
     function buildSchedules() {
       const list = venues.slice().sort((a,b)=> new Date(firstMatch(a).date) - new Date(firstMatch(b).date));
       document.getElementById('scheduleGrid').innerHTML = list.map(venue => `
-        <section class="venue-schedule" id="schedule-${venue.id}">
+        <section class="venue-schedule ${activeVenueId === venue.id ? 'active' : ''}" id="schedule-${venue.id}" data-id="${venue.id}">
           <div class="venue-head">
             <div>
               <h3 class="venue-name">${venue.stadium}</h3>
@@ -1277,19 +3210,32 @@
     function focusVenue(id) {
       const venue = venues.find(v => v.id === id);
       if (!venue) return;
+      activeVenueId = id;
+      buildHeroBrief();
+      buildProfilePanel();
+      syncActiveState();
       map.flyTo([venue.lat, venue.lng], venue.practicalClass === 'road' ? 7 : 4.5, { duration: 1.1 });
       const marker = mapMarkers.get(id);
       if (marker) marker.openPopup();
+      const heroMarker = heroMarkers.get(id);
+      if (heroMarker) heroMarker.openPopup();
       document.getElementById(`schedule-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function refresh() {
       const list = getFilteredVenues();
+      if (!list.some(v => v.id === activeVenueId)) {
+        activeVenueId = list[0]?.id || venues[0].id;
+      }
       buildRankList(list);
       buildCards(list);
       buildComparison(list);
       buildBestGrid();
       buildSummary();
+      buildHeroBrief();
+      buildProfilePanel();
+      buildHostAtlas();
+      syncActiveState();
 
       venues.forEach(v => {
         const visible = currentCountry === 'All' || v.country === currentCountry;
@@ -1319,9 +3265,28 @@
       });
     });
 
+    document.querySelectorAll('.hero-map-chip').forEach(btn => {
+      btn.addEventListener('click', () => focusVenue(btn.dataset.venue));
+    });
+
+    let currentAtlasColumns = getAtlasColumnCount();
+    window.addEventListener('resize', () => {
+      map.invalidateSize();
+      heroMap.invalidateSize();
+      const nextAtlasColumns = getAtlasColumnCount();
+      if (nextAtlasColumns !== currentAtlasColumns) {
+        currentAtlasColumns = nextAtlasColumns;
+        buildHostAtlas();
+      }
+    });
+
     buildSchedules();
     buildCalendar();
     refresh();
+    setTimeout(() => {
+      map.invalidateSize();
+      heroMap.invalidateSize();
+    }, 0);
   </script>
 </body>
 </html>
