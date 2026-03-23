@@ -97,19 +97,33 @@
       margin-bottom: 28px;
     }
     .brand-mark {
-      width: 58px;
-      height: 58px;
-      border-radius: 18px;
+      position: relative;
+      min-width: 84px;
+      height: 52px;
+      padding: 0 16px 8px;
+      border-radius: 999px;
       background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
       border: 1px solid rgba(255,255,255,0.12);
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
-      display: grid;
-      place-items: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      font-size: 1.15rem;
+      font-size: 1.4rem;
       font-weight: 800;
-      line-height: 0.95;
-      letter-spacing: -0.06em;
+      line-height: 1;
+      letter-spacing: -0.1em;
+      overflow: hidden;
+    }
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 9px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--canada) 0%, var(--usa) 48%, var(--mexico) 100%);
     }
     .brand-label {
       color: var(--text-faint);
@@ -187,11 +201,16 @@
       padding: 22px;
     }
     .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 14px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 430px);
+      gap: 18px;
+      align-items: stretch;
       margin-bottom: 18px;
+    }
+    .topbar-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     .topbar-kicker {
       margin: 0 0 6px;
@@ -209,22 +228,84 @@
       letter-spacing: -0.07em;
       max-width: 560px;
     }
-    .topbar-status {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px;
-      max-width: 460px;
+    .topbar-brand {
+      position: relative;
+      overflow: hidden;
+      min-height: 150px;
+      padding: 20px 170px 20px 22px;
+      border-radius: 28px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background:
+        radial-gradient(circle at 20% 12%, rgba(255,77,147,0.18), transparent 34%),
+        radial-gradient(circle at 74% 20%, rgba(74,184,255,0.18), transparent 36%),
+        linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      box-shadow: var(--shadow-soft);
+      isolation: isolate;
     }
-    .topbar-status span {
-      padding: 8px 12px;
+    .topbar-brand::before {
+      content: "";
+      position: absolute;
+      inset: auto 20px 16px 22px;
+      height: 5px;
       border-radius: 999px;
-      font-size: 0.76rem;
-      font-weight: 700;
+      background: linear-gradient(90deg, var(--canada) 0%, var(--usa) 50%, var(--mexico) 100%);
+      opacity: 0.95;
+    }
+    .topbar-brand::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.06);
+      pointer-events: none;
+      opacity: 0.9;
+    }
+    .wordmark-label {
+      margin: 0 0 10px;
+      color: var(--text-faint);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 800;
+    }
+    .wordmark-main,
+    .wordmark-year {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-weight: 800;
+      line-height: 0.94;
+      letter-spacing: -0.08em;
+      background: linear-gradient(90deg, var(--canada) 0%, #f6f8ff 28%, var(--usa) 62%, var(--mexico) 100%);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradientShift 6s ease-in-out infinite;
+    }
+    .wordmark-main {
+      margin: 0;
+      font-size: clamp(1.45rem, 2.4vw, 2rem);
+    }
+    .wordmark-year {
+      margin: 2px 0 8px;
+      font-size: clamp(2.35rem, 4vw, 3.8rem);
+      letter-spacing: -0.13em;
+    }
+    .wordmark-subcopy {
+      margin: 0;
+      max-width: 240px;
       color: var(--text-soft);
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      backdrop-filter: blur(14px);
+      font-size: 0.9rem;
+    }
+    .wordmark-mascots {
+      position: absolute;
+      right: 8px;
+      bottom: -2px;
+      width: 166px;
+      max-width: 42%;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 28px rgba(0,0,0,0.32));
+      z-index: -1;
+      animation: pulseFloat 3.6s ease-in-out infinite;
     }
 
     .hero {
@@ -740,14 +821,12 @@
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 18px;
-      align-items: start;
-    }
-    .atlas-column {
-      display: grid;
-      gap: 18px;
-      align-content: start;
+      align-items: stretch;
     }
     .atlas-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
       overflow: hidden;
       border-radius: 24px;
       border: 1px solid rgba(255,255,255,0.08);
@@ -824,7 +903,9 @@
     }
     .atlas-body {
       padding: 18px;
-      display: grid;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
       gap: 14px;
     }
     .atlas-location {
@@ -861,6 +942,10 @@
       margin: 0;
       color: var(--text-soft);
       font-size: 0.88rem;
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
     }
     .atlas-story-grid {
       display: grid;
@@ -885,6 +970,10 @@
       margin: 0;
       color: var(--text-soft);
       font-size: 0.86rem;
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
     }
     .atlas-thumbs {
       display: grid;
@@ -922,6 +1011,7 @@
       font-weight: 700;
     }
     .atlas-jump {
+      margin-top: auto;
       width: 100%;
       border: 1px solid rgba(51,230,255,0.18);
       background: linear-gradient(90deg, rgba(51,230,255,0.16), rgba(92,124,255,0.14));
@@ -1083,7 +1173,6 @@
     .map-card {
       display: flex;
       flex-direction: column;
-      min-height: 780px;
     }
     .map-card .section-head,
     .table-card .section-head,
@@ -1153,7 +1242,7 @@
     .pill.active[data-country="Mexico"] { border-color: rgba(97,241,173,0.4); background: rgba(97,241,173,0.14); }
 
     #map {
-      height: 560px;
+      height: 510px;
       margin: 0 24px 22px;
       border-radius: 24px;
       overflow: hidden;
@@ -1275,6 +1364,7 @@
       display: grid;
       grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
       gap: 22px;
+      align-items: start;
       margin-bottom: 24px;
     }
     .table-card,
@@ -1351,7 +1441,7 @@
     .schedule-grid {
       display: grid;
       gap: 18px;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
     .venue-schedule {
       padding: 18px;
@@ -1424,37 +1514,36 @@
 
     .calendar-wrap {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-    .month {
-      padding: 18px;
-      border-radius: 22px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .month h3 {
-      margin: 0 0 12px;
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      font-size: 1.2rem;
-      letter-spacing: -0.04em;
-    }
-    .agenda {
-      display: grid;
-      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 14px;
     }
     .day {
+      display: grid;
+      align-content: start;
+      gap: 12px;
       padding: 12px 14px;
-      border-radius: 16px;
+      border-radius: 20px;
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.06);
+    }
+    .day.active {
+      border-color: rgba(51,230,255,0.26);
+      background: linear-gradient(180deg, rgba(51,230,255,0.08), rgba(255,255,255,0.03));
+      box-shadow: 0 18px 34px rgba(0,0,0,0.18);
     }
     .day-head {
       display: flex;
       justify-content: space-between;
       gap: 12px;
-      align-items: baseline;
-      margin-bottom: 8px;
+      align-items: flex-start;
+    }
+    .day-month {
+      margin-bottom: 3px;
+      color: var(--text-faint);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 800;
     }
     .day-date {
       color: var(--text);
@@ -1476,7 +1565,57 @@
       color: var(--text-soft);
       font-size: 0.84rem;
     }
+    .event-item.active {
+      border: 1px solid rgba(255,77,147,0.18);
+      background: rgba(255,77,147,0.08);
+    }
     .event-item strong { color: var(--text); }
+
+    .summary-feature {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 142px;
+      gap: 16px;
+      align-items: center;
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        radial-gradient(circle at 20% 18%, rgba(74,184,255,0.16), transparent 34%),
+        radial-gradient(circle at 85% 22%, rgba(255,77,147,0.16), transparent 34%),
+        linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      overflow: hidden;
+    }
+    .summary-feature-copy h3 {
+      margin: 0 0 10px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: -0.05em;
+    }
+    .summary-feature-copy p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.92rem;
+    }
+    .summary-feature-kicker {
+      margin-bottom: 8px;
+      color: var(--text-faint);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 800;
+    }
+    .summary-feature-art {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .summary-feature-art img {
+      width: 100%;
+      max-height: 170px;
+      object-fit: contain;
+      filter: drop-shadow(0 16px 30px rgba(0,0,0,0.3));
+      animation: pulseFloat 3.2s ease-in-out infinite;
+    }
 
     .marker-pin {
       width: 18px;
@@ -1571,6 +1710,10 @@
       from { transform: rotate(12deg); }
       to { transform: rotate(372deg); }
     }
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
     @keyframes spinReverse {
       from { transform: rotate(-18deg); }
       to { transform: rotate(-378deg); }
@@ -1607,6 +1750,9 @@
       .workspace {
         padding-top: 22px;
       }
+      .topbar {
+        grid-template-columns: 1fr;
+      }
       .hero,
       .profile-layout,
       .layout,
@@ -1633,11 +1779,11 @@
       .workspace {
         padding: 18px 14px 28px;
       }
-      .topbar {
-        flex-direction: column;
+      .topbar-brand {
+        padding-right: 126px;
       }
-      .topbar-status {
-        justify-content: flex-start;
+      .wordmark-mascots {
+        width: 124px;
       }
       .nav-list {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1685,7 +1831,8 @@
       }
       .profile-gallery,
       .profile-columns,
-      .hero-stack {
+      .hero-stack,
+      .summary-feature {
         grid-template-columns: 1fr;
       }
       .atlas-grid {
@@ -1706,7 +1853,7 @@
     <aside class="sidebar">
       <div>
         <div class="brand-stack">
-          <div class="brand-mark">20<br>26</div>
+          <div class="brand-mark">2026</div>
           <div>
             <div class="brand-label">Fort Drum</div>
             <div class="brand-sub">World Cup route lab</div>
@@ -1730,14 +1877,16 @@
 
     <main class="workspace">
       <header class="topbar">
-        <div>
+        <div class="topbar-copy">
           <p class="topbar-kicker">2026 host venue intelligence</p>
           <h1>Fort Drum World Cup Planner</h1>
         </div>
-        <div class="topbar-status">
-          <span>16 hosts in the atlas</span>
-          <span>6 venues in the route shortlist</span>
-          <span>39 confirmed matches in the planner</span>
+        <div class="topbar-brand" aria-label="FIFA World Cup 2026 host nations wordmark">
+          <div class="wordmark-label">Canada · United States · Mexico</div>
+          <div class="wordmark-main">FIFA World Cup</div>
+          <div class="wordmark-year">2026</div>
+          <p class="wordmark-subcopy">Three host nations, one cleaner Fort Drum route board.</p>
+          <img class="wordmark-mascots" src="assets/mascots/host-mascots-trio.png" alt="Host nation mascots for Canada, Mexico, and the United States">
         </div>
       </header>
 
@@ -2196,22 +2345,22 @@
         localAngle: 'This is the strongest domestic flex if you care about bracket upside and city spillover. You get Meadowlands ease on game day and the New York skyline as the cultural add-on.',
         gallery: [
           {
-            src: 'assets/deck/image-18-1.jpeg',
+            src: 'assets/web/optimized/metlife-aerial-1800.jpg',
             label: 'Venue photo',
             title: 'MetLife Stadium',
-            alt: 'Aerial view of MetLife Stadium'
+            alt: 'High-resolution aerial view of MetLife Stadium'
+          },
+          {
+            src: 'assets/web/optimized/nyc-skyline-night-1800.jpg',
+            label: 'Metro backdrop',
+            title: 'New York skyline at blue hour',
+            alt: 'New York City skyline at dusk'
           },
           {
             src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg/1280px-View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg',
-            label: 'Metro backdrop',
-            title: 'New York City skyline',
-            alt: 'New York City skyline with the Empire State Building'
-          },
-          {
-            src: 'assets/deck/image-18-6.jpeg',
             label: 'Final host cue',
-            title: 'Final-stage atmosphere',
-            alt: 'MetLife Stadium final host context'
+            title: 'Manhattan match-night cue',
+            alt: 'New York City skyline with the Empire State Building'
           }
         ]
       },
@@ -2569,10 +2718,10 @@
         country: 'United States',
         code: 'usa',
         badge: 'Shortlist',
-        cover: 'assets/deck/image-18-1.jpeg',
+        cover: 'assets/web/optimized/metlife-aerial-1800.jpg',
         thumbs: [
-          { src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg/1280px-View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg', label: 'Manhattan skyline' },
-          { src: 'assets/deck/image-18-6.jpeg', label: 'Final host context' }
+          { src: 'assets/web/optimized/nyc-skyline-night-1800.jpg', label: 'New York skyline' },
+          { src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg/1280px-View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg', label: 'Final host context' }
         ],
         facts: [
           { label: 'Capacity', value: '78,576' },
@@ -2976,12 +3125,6 @@
       `;
     }
 
-    function getAtlasColumnCount() {
-      if (window.innerWidth <= 860) return 1;
-      if (window.innerWidth <= 1180) return 2;
-      return 3;
-    }
-
     function buildHostAtlasCard(host) {
       return `
         <article class="atlas-card">
@@ -3031,22 +3174,7 @@
     }
 
     function buildHostAtlas() {
-      const columnCount = getAtlasColumnCount();
-      const columns = Array.from({ length: columnCount }, () => []);
-      const weights = Array(columnCount).fill(0);
-
-      hostAtlas.forEach(host => {
-        const weight = host.note.length + atlasContext[host.id].cityStory.length + atlasContext[host.id].stadiumStory.length + host.thumbs.length * 40;
-        const targetIndex = weights.indexOf(Math.min(...weights));
-        columns[targetIndex].push(host);
-        weights[targetIndex] += weight;
-      });
-
-      document.getElementById('atlasGrid').innerHTML = columns.map(column => `
-        <div class="atlas-column">
-          ${column.map(buildHostAtlasCard).join('')}
-        </div>
-      `).join('');
+      document.getElementById('atlasGrid').innerHTML = hostAtlas.map(buildHostAtlasCard).join('');
       document.querySelectorAll('.atlas-jump').forEach(btn => {
         btn.addEventListener('click', () => {
           focusVenue(btn.dataset.id);
@@ -3153,34 +3281,45 @@
       const allMatches = venues.flatMap(v => v.schedules.map(m => ({...m, venue: v.stadium, country: v.country, venueId: v.id})));
       const grouped = allMatches.sort((a,b)=> new Date(a.date)-new Date(b.date)).reduce((acc, match) => {
         const d = new Date(match.date);
-        const monthKey = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
         const dayKey = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' });
-        acc[monthKey] ??= {};
-        acc[monthKey][dayKey] ??= [];
-        acc[monthKey][dayKey].push(match);
+        acc[dayKey] ??= {
+          monthLabel: d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+          events: []
+        };
+        acc[dayKey].events.push(match);
         return acc;
       }, {});
 
-      document.getElementById('calendarWrap').innerHTML = Object.entries(grouped).map(([month, days]) => `
-        <section class="month">
-          <h3>${month}</h3>
-          <div class="agenda">
-            ${Object.entries(days).map(([day, events]) => `
-              <div class="day">
-                <div class="day-head">
-                  <div class="day-date">${day}</div>
-                  <div class="day-count">${events.length} match${events.length > 1 ? 'es' : ''}</div>
-                </div>
-                <div class="event-list">
-                  ${events.map(event => `<div class="event-item"><strong>${event.code}</strong> · ${event.fixture}<br>${event.stage} · ${event.venue}</div>`).join('')}
-                </div>
+      document.getElementById('calendarWrap').innerHTML = Object.entries(grouped).map(([day, group]) => `
+        <article class="day ${group.events.some(event => event.venueId === activeVenueId) ? 'active' : ''}">
+          <div class="day-head">
+            <div>
+              <div class="day-month">${group.monthLabel}</div>
+              <div class="day-date">${day}</div>
+            </div>
+            <div class="day-count">${group.events.length} match${group.events.length > 1 ? 'es' : ''}</div>
+          </div>
+          <div class="event-list">
+            ${group.events.map(event => `
+              <div class="event-item ${event.venueId === activeVenueId ? 'active' : ''}">
+                <strong>${event.code}</strong> · ${event.fixture}<br>${event.stage} · ${event.venue}
               </div>`).join('')}
           </div>
-        </section>`).join('');
+        </article>`).join('');
     }
 
     function buildSummary() {
       document.getElementById('summaryGrid').innerHTML = `
+        <article class="summary-feature">
+          <div class="summary-feature-copy">
+            <div class="summary-feature-kicker">Smart shortlist</div>
+            <h3>Route the tournament like a person, not a spreadsheet</h3>
+            <p>Toronto and MetLife are the default answers. Philadelphia is the next clean move. Miami, Mexico City, and Vancouver only win if the city or bracket upside is the point.</p>
+          </div>
+          <div class="summary-feature-art">
+            <img src="assets/mascots/mascot-usa.png" alt="United States host mascot">
+          </div>
+        </article>
         <div class="summary-box">
           <h3>Which stadium is closest to Fort Drum?</h3>
           <p class="note"><strong>BMO Field in Toronto.</strong> It is the shortest trip in this set at about 217 road miles and roughly 4 hours, assuming a normal border crossing.</p>
@@ -3269,15 +3408,9 @@
       btn.addEventListener('click', () => focusVenue(btn.dataset.venue));
     });
 
-    let currentAtlasColumns = getAtlasColumnCount();
     window.addEventListener('resize', () => {
       map.invalidateSize();
       heroMap.invalidateSize();
-      const nextAtlasColumns = getAtlasColumnCount();
-      if (nextAtlasColumns !== currentAtlasColumns) {
-        currentAtlasColumns = nextAtlasColumns;
-        buildHostAtlas();
-      }
     });
 
     buildSchedules();
