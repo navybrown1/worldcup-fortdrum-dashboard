@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fort Drum 2026 World Cup Travel Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <style>
+    :root {
+      --primary: #00153e;
+      --primary-container: #002868;
+      --secondary: #ba022d;
+      --surface: #f7f9fb;
+      --surface-low: #f2f4f6;
+      --surface-lowest: #ffffff;
+      --surface-high: #e6e8ea;
+      --text: #191c1e;
+      --text-soft: #5b5f6a;
+      --outline: rgba(116, 119, 129, 0.18);
+      --shadow: 0 12px 32px rgba(0, 21, 62, 0.08);
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --usa: #00153e;
+      --canada: #ba022d;
+      --mexico: #0d7a43;
+      --success: #0b8457;
+      --warning: #b86a00;
+      --danger: #a12626;
+      --hero: linear-gradient(135deg, #00153e 0%, #002868 55%, #ba022d 120%);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .shell {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: var(--hero);
+      color: white;
+      border-radius: 28px;
+      padding: 36px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(20px);
+      opacity: 0.28;
+      pointer-events: none;
+    }
+    .hero::before {
+      width: 280px; height: 280px;
+      right: -60px; top: -60px;
+      background: rgba(255,255,255,0.18);
+    }
+    .hero::after {
+      width: 360px; height: 360px;
+      left: -100px; bottom: -160px;
+      background: rgba(255,255,255,0.1);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(8px);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      margin-bottom: 18px;
+    }
+    .dot {
+      width: 9px; height: 9px; border-radius: 999px; background: #7df0c1;
+      box-shadow: 0 0 0 8px rgba(125,240,193,0.12);
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
+      gap: 22px;
+      position: relative;
+      z-index: 1;
+    }
+    .hero h1 {
+      margin: 0 0 14px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: clamp(2rem, 4.6vw, 4.7rem);
+      line-height: 0.95;
+      letter-spacing: -0.06em;
+    }
+    .hero p {
+      margin: 0;
+      max-width: 780px;
+      color: rgba(255,255,255,0.86);
+      font-size: 1rem;
+    }
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      align-content: start;
+    }
+    .metric {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.14);
+      backdrop-filter: blur(14px);
+      min-height: 110px;
+    }
+    .metric-value {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+    .metric-label {
+      margin-top: 8px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 700;
+    }
+    .metric-note {
+      margin-top: 6px;
+      color: rgba(255,255,255,0.8);
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) 380px;
+      gap: 22px;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--surface-lowest);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .map-card {
+      overflow: hidden;
+      min-height: 720px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-head {
+      padding: 24px 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+    }
+    .section-title {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: -0.05em;
+      color: var(--primary);
+    }
+    .section-subtitle {
+      margin: 6px 0 0;
+      color: var(--text-soft);
+      font-size: 0.95rem;
+    }
+
+    .controls {
+      padding: 18px 24px 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .control {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .control label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      font-weight: 800;
+      color: var(--text-soft);
+    }
+    select, button.filter-btn {
+      width: 100%;
+      border: 0;
+      background: var(--surface-low);
+      color: var(--primary);
+      padding: 12px 14px;
+      border-radius: 14px;
+      font: inherit;
+      font-weight: 600;
+      outline: none;
+      transition: transform .2s ease, background .2s ease;
+    }
+    select:hover, button.filter-btn:hover { transform: translateY(-1px); background: #edf1f5; }
+
+    .country-pills {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      border: 0;
+    }
+    .pill.active { color: white; box-shadow: 0 10px 22px rgba(0,0,0,0.12); }
+    .pill[data-country="All"] { background: var(--surface-high); color: var(--primary); }
+    .pill[data-country="United States"] { background: rgba(0,21,62,0.1); color: var(--primary); }
+    .pill[data-country="Canada"] { background: rgba(186,2,45,0.1); color: var(--secondary); }
+    .pill[data-country="Mexico"] { background: rgba(13,122,67,0.12); color: var(--mexico); }
+    .pill.active[data-country="All"] { background: #344155; }
+    .pill.active[data-country="United States"] { background: var(--usa); }
+    .pill.active[data-country="Canada"] { background: var(--canada); }
+    .pill.active[data-country="Mexico"] { background: var(--mexico); }
+
+    #map {
+      height: 520px;
+      margin: 0 24px 24px;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .map-foot {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 0 24px 24px;
+    }
+    .legend {
+      background: var(--surface-low);
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-soft);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .legend .chip {
+      width: 10px; height: 10px; border-radius: 999px;
+    }
+
+    .side-panel {
+      padding: 18px;
+      display: grid;
+      gap: 18px;
+      position: sticky;
+      top: 18px;
+    }
+    .mini-card {
+      background: var(--surface-low);
+      padding: 18px;
+      border-radius: 18px;
+    }
+    .mini-card h3 {
+      margin: 0 0 12px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      letter-spacing: -0.04em;
+      color: var(--primary);
+    }
+    .rank-list {
+      display: grid; gap: 10px;
+    }
+    .rank-item {
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--surface-lowest);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      transition: transform .2s ease, box-shadow .2s ease;
+      cursor: pointer;
+    }
+    .rank-item:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,21,62,0.08); }
+    .rank-num {
+      width: 32px; height: 32px; border-radius: 999px;
+      display: grid; place-items: center;
+      background: var(--surface-low);
+      color: var(--primary);
+      font-size: 13px; font-weight: 800;
+    }
+    .rank-name { font-weight: 800; color: var(--primary); }
+    .rank-meta { font-size: 12px; color: var(--text-soft); }
+    .country-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      background: var(--surface-lowest);
+      width: fit-content;
+    }
+    .country-badge.usa { color: var(--usa); }
+    .country-badge.canada { color: var(--canada); }
+    .country-badge.mexico { color: var(--mexico); }
+
+    .best-grid {
+      display: grid;
+      gap: 10px;
+    }
+    .best-box {
+      background: var(--surface-lowest);
+      border-radius: 18px;
+      padding: 14px 16px;
+    }
+    .best-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 800;
+      color: var(--text-soft);
+      margin-bottom: 6px;
+    }
+    .best-value {
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 3px;
+    }
+    .best-note {
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin: 24px 0;
+    }
+    .stadium-card {
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+      min-height: 290px;
+      transition: transform .24s ease, box-shadow .24s ease;
+    }
+    .stadium-card:hover { transform: translateY(-4px); box-shadow: 0 18px 38px rgba(0,21,62,0.12); }
+    .stadium-card::before {
+      content: "";
+      position: absolute;
+      inset: auto -25% -30% auto;
+      width: 220px; height: 220px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(186,2,45,0.08), transparent 70%);
+      pointer-events: none;
+    }
+    .stadium-card h3 {
+      margin: 8px 0 6px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      letter-spacing: -0.04em;
+      color: var(--primary);
+      font-size: 1.35rem;
+    }
+    .stadium-meta {
+      color: var(--text-soft);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+    .kv-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .kv {
+      background: var(--surface-low);
+      padding: 12px;
+      border-radius: 14px;
+    }
+    .kv .k {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      font-weight: 800;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+    .kv .v {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 0.97rem;
+    }
+    .note {
+      font-size: 13px;
+      color: var(--text-soft);
+      margin: 0;
+    }
+    .note strong { color: var(--primary); }
+
+    .table-card, .schedules-card, .calendar-card, .insights-card, .summary-card {
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      padding: 14px 12px;
+      vertical-align: top;
+    }
+    th {
+      color: var(--text-soft);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--outline);
+    }
+    td { border-bottom: 1px solid rgba(0,0,0,0.05); }
+    tbody tr:hover { background: rgba(0,21,62,0.025); }
+
+    .schedule-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .venue-schedule {
+      background: var(--surface-low);
+      border-radius: 20px;
+      padding: 18px;
+    }
+    .venue-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+    .venue-name {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: -0.04em;
+      color: var(--primary);
+    }
+    .matches {
+      display: grid; gap: 10px;
+    }
+    .match {
+      background: var(--surface-lowest);
+      border-radius: 16px;
+      padding: 13px 14px;
+    }
+    .match-top {
+      display: flex; justify-content: space-between; gap: 12px; align-items: center;
+      margin-bottom: 8px;
+    }
+    .match-stage {
+      display: inline-flex;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      background: rgba(0,21,62,0.08);
+      color: var(--primary);
+    }
+    .match-date {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .match-fixture { font-weight: 800; color: var(--primary); }
+    .match-code { font-size: 12px; color: var(--text-soft); margin-top: 4px; }
+
+    .calendar-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .month {
+      background: var(--surface-low);
+      border-radius: 22px;
+      padding: 18px;
+    }
+    .month h3 {
+      margin: 0 0 12px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      color: var(--primary);
+      letter-spacing: -0.04em;
+    }
+    .agenda {
+      display: grid; gap: 10px;
+    }
+    .day {
+      background: var(--surface-lowest);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+    .day-head {
+      display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .day-date { font-weight: 800; color: var(--primary); }
+    .day-count { font-size: 12px; color: var(--text-soft); }
+    .event-list { display: grid; gap: 6px; }
+    .event-item {
+      font-size: 13px;
+      color: var(--text-soft);
+      background: var(--surface-low);
+      padding: 8px 10px;
+      border-radius: 12px;
+    }
+    .event-item strong { color: var(--primary); }
+
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .insight {
+      background: var(--surface-low);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .insight h3 {
+      margin: 0 0 8px;
+      color: var(--primary);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      letter-spacing: -0.03em;
+      font-size: 1.1rem;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .summary-box {
+      background: var(--surface-low);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .summary-box h3 {
+      margin: 0 0 10px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      color: var(--primary);
+      letter-spacing: -0.03em;
+    }
+
+    .footnote {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #f0f3f7;
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    .marker-pin {
+      width: 18px; height: 18px; border-radius: 999px;
+      border: 3px solid white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .popup-box {
+      min-width: 250px;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .popup-title {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 1rem;
+      margin-bottom: 6px;
+    }
+    .popup-sub { font-size: 13px; color: var(--text-soft); margin-bottom: 10px; }
+    .popup-metrics {
+      display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px;
+      margin-bottom: 10px;
+    }
+    .popup-kv { background: var(--surface-low); border-radius: 12px; padding: 8px 10px; }
+    .popup-kv .k { font-size: 10px; color: var(--text-soft); text-transform: uppercase; font-weight: 800; letter-spacing: 0.08em; }
+    .popup-kv .v { color: var(--primary); font-weight: 800; font-size: 13px; }
+    details.popup-details summary {
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--secondary);
+      margin: 10px 0 6px;
+    }
+    .popup-match { font-size: 12px; color: var(--text-soft); margin-top: 4px; }
+
+    @media (max-width: 1180px) {
+      .layout, .hero-grid, .cards-grid, .schedule-grid, .calendar-wrap, .summary-grid, .insights-grid {
+        grid-template-columns: 1fr;
+      }
+      .controls { grid-template-columns: 1fr 1fr; }
+      .side-panel { position: static; }
+    }
+    @media (max-width: 760px) {
+      .shell { padding: 14px; }
+      .hero { padding: 24px; }
+      .controls { grid-template-columns: 1fr; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .kv-grid { grid-template-columns: 1fr 1fr; }
+      #map { height: 430px; margin: 0 16px 16px; }
+      .section-head, .controls, .map-foot, .table-card, .schedules-card, .calendar-card, .insights-card, .summary-card { padding-left: 16px; padding-right: 16px; }
+      .section-head { padding-top: 18px; }
+      .map-card { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow"><span class="dot"></span>Fort Drum travel intelligence · verified venue slate</div>
+          <h1>2026 FIFA World Cup<br>from Fort Drum.</h1>
+          <p>A polished planning dashboard centered on Fort Drum, New York. It focuses on the six venues you asked for, uses the confirmed 2026 venue assignments currently published by FIFA and FIFA’s official hospitality ecosystem, and separates realistic road trips from trips that are simply better by air.</p>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric">
+            <div class="metric-value">6</div>
+            <div class="metric-label">Tracked venues</div>
+            <div class="metric-note">Philadelphia, NY/NJ, Toronto, Vancouver, Mexico City, Miami</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">39</div>
+            <div class="metric-label">Confirmed matches</div>
+            <div class="metric-note">Across the selected venues only</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">217 mi</div>
+            <div class="metric-label">Closest road trip</div>
+            <div class="metric-note">Toronto from Fort Drum</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">SYR</div>
+            <div class="metric-label">Primary flight gateway</div>
+            <div class="metric-note">NYC-area airports are noted where useful, including Newark</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="card map-card">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Interactive map</h2>
+            <p class="section-subtitle">Click any stadium marker for the venue profile, practical travel summary, next match, and the full confirmed stadium schedule.</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="control">
+            <label for="sortSelect">Sort venues</label>
+            <select id="sortSelect">
+              <option value="distance">Shortest distance</option>
+              <option value="travelHours">Shortest travel time</option>
+              <option value="capacity">Highest stadium capacity</option>
+              <option value="earliest">Earliest match date</option>
+            </select>
+          </div>
+          <div class="control">
+            <label>Country filter</label>
+            <div class="country-pills">
+              <button class="pill active" data-country="All">All</button>
+              <button class="pill" data-country="United States">United States</button>
+              <button class="pill" data-country="Canada">Canada</button>
+              <button class="pill" data-country="Mexico">Mexico</button>
+            </div>
+          </div>
+          <div class="control">
+            <label>Travel rule</label>
+            <button class="filter-btn" id="modeBtn">Showing practical mode per venue</button>
+          </div>
+          <div class="control">
+            <label>Calendar scope</label>
+            <button class="filter-btn" id="calendarBtn">All confirmed games at these six venues</button>
+          </div>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="map-foot">
+          <div class="legend"><span class="chip" style="background: var(--usa)"></span> United States</div>
+          <div class="legend"><span class="chip" style="background: var(--canada)"></span> Canada</div>
+          <div class="legend"><span class="chip" style="background: var(--mexico)"></span> Mexico</div>
+          <div class="legend"><span class="chip" style="background: var(--warning)"></span> Better by air</div>
+          <div class="legend"><span class="chip" style="background: var(--success)"></span> Good road-trip candidate</div>
+        </div>
+      </div>
+
+      <aside class="card side-panel">
+        <div class="mini-card">
+          <h3>Ranked from Fort Drum</h3>
+          <div class="rank-list" id="rankList"></div>
+        </div>
+
+        <div class="mini-card">
+          <h3>Best options for you</h3>
+          <div class="best-grid" id="bestGrid"></div>
+        </div>
+
+        <div class="mini-card">
+          <h3>Travel logic</h3>
+          <p class="note"><strong>Road trips:</strong> Toronto, MetLife, and Philadelphia are treated as drive-first options.</p>
+          <p class="note"><strong>Flights:</strong> Miami, Vancouver, and Mexico City are treated as flight-first options. Syracuse is the default gateway from Fort Drum, while Newark or other NYC-area airports are noted where they improve long-haul options.</p>
+          <p class="note"><strong>Border note:</strong> Toronto is the best quick international play, but it still depends on your border crossing timing and documents.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="cards-grid" id="cardsGrid"></section>
+
+    <section class="card table-card">
+      <div class="section-head" style="padding:0 0 18px;">
+        <div>
+          <h2 class="section-title">Comparison table</h2>
+          <p class="section-subtitle">Side-by-side comparison of the included venues, sorted live by the controls above.</p>
+        </div>
+      </div>
+      <div style="overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Venue</th>
+              <th>City</th>
+              <th>Country</th>
+              <th>Capacity</th>
+              <th>Distance from Fort Drum</th>
+              <th>Estimated travel time</th>
+              <th>Mode</th>
+              <th>First match</th>
+              <th>Matches</th>
+            </tr>
+          </thead>
+          <tbody id="comparisonBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card schedules-card">
+      <div class="section-head" style="padding:0 0 18px;">
+        <div>
+          <h2 class="section-title">Match schedule by venue</h2>
+          <p class="section-subtitle">Every confirmed match currently assigned to the six stadiums in this dashboard. No invented opponents. If a side is not fixed yet, it stays labeled as TBD or by official fixture code.</p>
+        </div>
+      </div>
+      <div class="schedule-grid" id="scheduleGrid"></div>
+    </section>
+
+    <section class="card calendar-card">
+      <div class="section-head" style="padding:0 0 18px;">
+        <div>
+          <h2 class="section-title">Calendar of all selected-venue games</h2>
+          <p class="section-subtitle">Extra section requested: a calendar view that rolls every confirmed game at the six selected venues into one chronological planner.</p>
+        </div>
+      </div>
+      <div class="calendar-wrap" id="calendarWrap"></div>
+    </section>
+
+    <section class="card insights-card">
+      <div class="section-head" style="padding:0 0 18px;">
+        <div>
+          <h2 class="section-title">Travel insights from Fort Drum</h2>
+          <p class="section-subtitle">The blunt version. This is the part that helps you decide whether a venue is a same-day play, a weekend trip, or a real flight commitment.</p>
+        </div>
+      </div>
+      <div class="insights-grid">
+        <div class="insight">
+          <h3>Toronto is the high-value quick strike</h3>
+          <p class="note">It is the closest venue in this set, sits around a four-hour drive from Fort Drum, and gives you a real international World Cup trip without turning it into a full expedition. The catch is the border, not the mileage.</p>
+        </div>
+        <div class="insight">
+          <h3>MetLife is the cleanest U.S.-only play</h3>
+          <p class="note">It is not the absolute closest, but it is a straightforward domestic trip with eight matches including the final. If you want the biggest upside without leaving the U.S., this is the move.</p>
+        </div>
+        <div class="insight">
+          <h3>Philadelphia is still realistic</h3>
+          <p class="note">It is a longer drive than MetLife, but still road-trip territory. It gives you six matches and can make sense if the fixture you want lands there instead of New Jersey.</p>
+        </div>
+        <div class="insight">
+          <h3>Miami, Vancouver, and Mexico City are flight trips</h3>
+          <p class="note">These are not “maybe I’ll just drive it” options unless you enjoy suffering. Miami is the easiest of the three by air from Syracuse. Vancouver and Mexico City are worth it for marquee value, but they are real travel days.</p>
+        </div>
+      </div>
+      <div class="footnote">Travel times for drive venues are treated as road-trip estimates from Fort Drum. Travel times for flight-first venues are practical door-to-door estimates using Syracuse as the primary local gateway and NYC-area airports, including Newark, where that helps. Expect real-world variation from traffic, border wait times, flight schedules, and airport transfer time.</div>
+    </section>
+
+    <section class="card summary-card">
+      <div class="section-head" style="padding:0 0 18px;">
+        <div>
+          <h2 class="section-title">Final recommendation summary</h2>
+          <p class="section-subtitle">Answers to the exact decision questions you asked.</p>
+        </div>
+      </div>
+      <div class="summary-grid" id="summaryGrid"></div>
+    </section>
+  </div>
+
+  <script>
+    const venues = [
+      {
+        id: 'toronto',
+        stadium: 'BMO Field',
+        fifaName: 'Toronto Stadium',
+        city: 'Toronto, Ontario',
+        country: 'Canada',
+        code: 'canada',
+        capacity: 45000,
+        distanceMiles: 217,
+        distanceType: 'road',
+        travelHours: 4.1,
+        travelLabel: 'About 4h 06m drive',
+        travelMode: 'Drive',
+        practicalClass: 'road',
+        travelNote: 'Best quick international option. Border crossing matters, but the mileage is very manageable from Fort Drum.',
+        airportNote: 'Drive-first option. Border timing and documents are the real variables.',
+        lat: 43.6332,
+        lng: -79.4186,
+        schedules: [
+          { date: '2026-06-12T15:00:00', stage: 'Group Stage', code: 'M3', fixture: 'Canada vs TBD' },
+          { date: '2026-06-17T19:00:00', stage: 'Group Stage', code: 'M21', fixture: 'Ghana vs Panama' },
+          { date: '2026-06-20T16:00:00', stage: 'Group Stage', code: 'M33', fixture: 'Germany vs Côte d\'Ivoire' },
+          { date: '2026-06-23T19:00:00', stage: 'Group Stage', code: 'M46', fixture: 'Panama vs Croatia' },
+          { date: '2026-06-26T15:00:00', stage: 'Group Stage', code: 'M62', fixture: 'TBD vs Senegal' },
+          { date: '2026-07-02T19:00:00', stage: 'Round of 32', code: 'M83', fixture: '2K vs 2L' },
+        ]
+      },
+      {
+        id: 'nynj',
+        stadium: 'MetLife Stadium',
+        fifaName: 'New York New Jersey Stadium',
+        city: 'East Rutherford, New Jersey',
+        country: 'United States',
+        code: 'usa',
+        capacity: 82500,
+        distanceMiles: 282,
+        distanceType: 'road',
+        travelHours: 6.05,
+        travelLabel: 'About 6h 03m drive',
+        travelMode: 'Drive',
+        practicalClass: 'road',
+        travelNote: 'Strongest domestic option. Easy to justify because it includes the final and still stays in road-trip territory.',
+        airportNote: 'Drive-first option. Expect heavier approach traffic as you get into the NYC/NJ corridor.',
+        lat: 40.8135,
+        lng: -74.0745,
+        schedules: [
+          { date: '2026-06-13T18:00:00', stage: 'Group Stage', code: 'M7', fixture: 'Brazil vs Morocco' },
+          { date: '2026-06-16T15:00:00', stage: 'Group Stage', code: 'M17', fixture: 'France vs Senegal' },
+          { date: '2026-06-22T20:00:00', stage: 'Group Stage', code: 'M41', fixture: 'Norway vs Senegal' },
+          { date: '2026-06-25T16:00:00', stage: 'Group Stage', code: 'M56', fixture: 'Ecuador vs Germany' },
+          { date: '2026-06-27T17:00:00', stage: 'Group Stage', code: 'M67', fixture: 'Panama vs England' },
+          { date: '2026-06-30T17:00:00', stage: 'Round of 32', code: 'M77', fixture: '1I vs 3CDFGH' },
+          { date: '2026-07-05T16:00:00', stage: 'Round of 16', code: 'M91', fixture: 'W76 vs W78' },
+          { date: '2026-07-19T15:00:00', stage: 'Final', code: 'M104', fixture: 'Final' },
+        ]
+      },
+      {
+        id: 'philadelphia',
+        stadium: 'Lincoln Financial Field',
+        fifaName: 'Philadelphia Stadium',
+        city: 'Philadelphia, Pennsylvania',
+        country: 'United States',
+        code: 'usa',
+        capacity: 69000,
+        distanceMiles: 335,
+        distanceType: 'road',
+        travelHours: 5.97,
+        travelLabel: 'About 5h 58m drive',
+        travelMode: 'Drive',
+        practicalClass: 'road',
+        travelNote: 'Still very realistic from Fort Drum, but it is more of a committed road day than Toronto or MetLife.',
+        airportNote: 'Drive-first option. Better for a planned weekend than a casual in-and-out.',
+        lat: 39.9008,
+        lng: -75.1675,
+        schedules: [
+          { date: '2026-06-14T19:00:00', stage: 'Group Stage', code: 'M9', fixture: 'Côte d\'Ivoire vs Ecuador' },
+          { date: '2026-06-19T21:00:00', stage: 'Group Stage', code: 'M29', fixture: 'Brazil vs Haiti' },
+          { date: '2026-06-22T17:00:00', stage: 'Group Stage', code: 'M42', fixture: 'TBD vs France' },
+          { date: '2026-06-25T16:00:00', stage: 'Group Stage', code: 'M55', fixture: 'Curaçao vs Côte d\'Ivoire' },
+          { date: '2026-06-27T17:00:00', stage: 'Group Stage', code: 'M68', fixture: 'Ghana vs Croatia' },
+          { date: '2026-07-04T17:00:00', stage: 'Round of 16', code: 'M89', fixture: 'W74 vs W77' },
+        ]
+      },
+      {
+        id: 'miami',
+        stadium: 'Hard Rock Stadium',
+        fifaName: 'Miami Stadium',
+        city: 'Miami Gardens, Florida',
+        country: 'United States',
+        code: 'usa',
+        capacity: 65000,
+        distanceMiles: 1299,
+        distanceType: 'air',
+        travelHours: 8.0,
+        travelLabel: 'About 8h total via Syracuse',
+        travelMode: 'Better by air',
+        practicalClass: 'air',
+        travelNote: 'This is the easiest Florida option, but it is still a real flight trip. Do it for the experience, not because it is convenient.',
+        airportNote: 'Fort Drum to SYR is about 79 miles. SYR to Miami nonstop is a practical flight-first play.',
+        lat: 25.9580,
+        lng: -80.2389,
+        schedules: [
+          { date: '2026-06-15T18:00:00', stage: 'Group Stage', code: 'M13', fixture: 'Saudi Arabia vs Uruguay' },
+          { date: '2026-06-21T18:00:00', stage: 'Group Stage', code: 'M37', fixture: 'Uruguay vs Cabo Verde' },
+          { date: '2026-06-24T18:00:00', stage: 'Group Stage', code: 'M49', fixture: 'Scotland vs Brazil' },
+          { date: '2026-06-27T19:30:00', stage: 'Group Stage', code: 'M71', fixture: 'Colombia vs Portugal' },
+          { date: '2026-07-03T18:00:00', stage: 'Round of 32', code: 'M86', fixture: '1J vs 2H' },
+          { date: '2026-07-11T17:00:00', stage: 'Quarter-final', code: 'M99', fixture: 'W91 vs W92' },
+          { date: '2026-07-18T17:00:00', stage: 'Bronze Final', code: 'M103', fixture: 'Bronze Final' },
+        ]
+      },
+      {
+        id: 'mexico-city',
+        stadium: 'Estadio Azteca',
+        fifaName: 'Mexico City Stadium',
+        city: 'Mexico City',
+        country: 'Mexico',
+        code: 'mexico',
+        capacity: 83000,
+        distanceMiles: 2178,
+        distanceType: 'air',
+        travelHours: 10.5,
+        travelLabel: 'About 10.5h total via Syracuse',
+        travelMode: 'Better by air',
+        practicalClass: 'air',
+        travelNote: 'Best Mexico choice in this dashboard because it is the opening-match venue and the marquee stadium. It is not a casual trip, but the payoff is huge.',
+        airportNote: 'Syracuse is usually the cleaner practical gateway from Fort Drum. NYC-area airports, including Newark, make more sense only if you specifically want a nonstop long-haul routing.',
+        lat: 19.3029,
+        lng: -99.1505,
+        schedules: [
+          { date: '2026-06-11T13:00:00', stage: 'Group Stage', code: 'M1', fixture: 'Mexico vs South Africa' },
+          { date: '2026-06-17T20:00:00', stage: 'Group Stage', code: 'M24', fixture: 'Uzbekistan vs Colombia' },
+          { date: '2026-06-24T19:00:00', stage: 'Group Stage', code: 'M53', fixture: 'TBD vs Mexico' },
+          { date: '2026-06-30T19:00:00', stage: 'Round of 32', code: 'M79', fixture: '1A vs 3CEFHI' },
+          { date: '2026-07-05T18:00:00', stage: 'Round of 16', code: 'M92', fixture: 'W79 vs W80' },
+        ]
+      },
+      {
+        id: 'vancouver',
+        stadium: 'BC Place',
+        fifaName: 'BC Place Vancouver',
+        city: 'Vancouver, British Columbia',
+        country: 'Canada',
+        code: 'canada',
+        capacity: 54000,
+        distanceMiles: 2237,
+        distanceType: 'air',
+        travelHours: 11.8,
+        travelLabel: 'About 11.5–12h total via Syracuse',
+        travelMode: 'Better by air',
+        practicalClass: 'air',
+        travelNote: 'Vancouver is excellent if you want the west-coast World Cup experience, but from Fort Drum this is absolutely a flight trip.',
+        airportNote: 'Syracuse one-stop itineraries are practical. Newark has nonstops to Vancouver, but the drive to Newark from Fort Drum eats a lot of that advantage.',
+        lat: 49.2768,
+        lng: -123.1118,
+        schedules: [
+          { date: '2026-06-13T21:00:00', stage: 'Group Stage', code: 'M6', fixture: 'TBD vs Australia' },
+          { date: '2026-06-18T15:00:00', stage: 'Group Stage', code: 'M27', fixture: 'Canada vs Qatar' },
+          { date: '2026-06-21T18:00:00', stage: 'Group Stage', code: 'M40', fixture: 'New Zealand vs Egypt' },
+          { date: '2026-06-24T12:00:00', stage: 'Group Stage', code: 'M51', fixture: 'Switzerland vs Canada' },
+          { date: '2026-06-26T20:00:00', stage: 'Group Stage', code: 'M64', fixture: 'New Zealand vs Belgium' },
+          { date: '2026-07-02T20:00:00', stage: 'Round of 32', code: 'M85', fixture: '1B vs 3EFGIJ' },
+          { date: '2026-07-07T13:00:00', stage: 'Round of 16', code: 'M96', fixture: 'W85 vs W87' },
+        ]
+      }
+    ];
+
+    const countryFill = {
+      usa: getComputedStyle(document.documentElement).getPropertyValue('--usa').trim(),
+      canada: getComputedStyle(document.documentElement).getPropertyValue('--canada').trim(),
+      mexico: getComputedStyle(document.documentElement).getPropertyValue('--mexico').trim()
+    };
+
+    let currentCountry = 'All';
+    let currentSort = 'distance';
+
+    const map = L.map('map', { zoomControl: true, scrollWheelZoom: true }).setView([44.05, -75.76], 4.75);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const fortDrumIcon = L.divIcon({
+      className: '',
+      html: '<div style="width:22px;height:22px;border-radius:999px;background:#111827;border:3px solid #fff;box-shadow:0 8px 18px rgba(0,0,0,.25)"></div>',
+      iconSize: [22, 22],
+      iconAnchor: [11, 11]
+    });
+
+    const fortDrumMarker = L.marker([44.05, -75.76], { icon: fortDrumIcon }).addTo(map);
+    fortDrumMarker.bindPopup('<div class="popup-box"><div class="popup-title">Fort Drum, New York</div><div class="popup-sub">Origin point for this planner.</div><div class="popup-match">Closest major airport: Syracuse Hancock International (SYR).</div></div>');
+
+    const mapMarkers = new Map();
+    const mapLines = new Map();
+
+    function makeMarkerIcon(code) {
+      const color = countryFill[code];
+      return L.divIcon({
+        className: '',
+        html: `<div class="marker-pin" style="background:${color}"></div>`,
+        iconSize: [18, 18],
+        iconAnchor: [9, 9],
+        popupAnchor: [0, -8]
+      });
+    }
+
+    function fmtDate(dt) {
+      return new Date(dt).toLocaleString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'
+      });
+    }
+
+    function fmtDateShort(dt) {
+      return new Date(dt).toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric'
+      });
+    }
+
+    function firstMatch(venue) {
+      return [...venue.schedules].sort((a,b)=> new Date(a.date)-new Date(b.date))[0];
+    }
+
+    function getFilteredVenues() {
+      let result = venues.filter(v => currentCountry === 'All' || v.country === currentCountry);
+      result = result.sort((a,b) => {
+        if (currentSort === 'distance') return a.distanceMiles - b.distanceMiles;
+        if (currentSort === 'travelHours') return a.travelHours - b.travelHours;
+        if (currentSort === 'capacity') return b.capacity - a.capacity;
+        if (currentSort === 'earliest') return new Date(firstMatch(a).date) - new Date(firstMatch(b).date);
+        return 0;
+      });
+      return result;
+    }
+
+    function popupHtml(venue) {
+      const next = firstMatch(venue);
+      const scheduleList = venue.schedules
+        .sort((a,b)=> new Date(a.date)-new Date(b.date))
+        .map(m => `<div class="popup-match"><strong>${m.code}</strong> · ${m.stage} · ${fmtDate(m.date)}<br>${m.fixture}</div>`)
+        .join('');
+      return `
+        <div class="popup-box">
+          <div class="popup-title">${venue.stadium}</div>
+          <div class="popup-sub">${venue.city}, ${venue.country}<br>FIFA tournament name: ${venue.fifaName}</div>
+          <div class="popup-metrics">
+            <div class="popup-kv"><div class="k">Capacity</div><div class="v">${venue.capacity.toLocaleString()}</div></div>
+            <div class="popup-kv"><div class="k">Distance</div><div class="v">${venue.distanceMiles.toLocaleString()} ${venue.distanceType === 'road' ? 'road mi' : 'air mi'}</div></div>
+            <div class="popup-kv"><div class="k">Travel</div><div class="v">${venue.travelLabel}</div></div>
+            <div class="popup-kv"><div class="k">Mode</div><div class="v">${venue.travelMode}</div></div>
+          </div>
+          <div class="popup-match"><strong>Next match:</strong> ${fmtDate(next.date)}<br>${next.fixture} · ${next.stage}</div>
+          <details class="popup-details">
+            <summary>See all matches at this stadium</summary>
+            ${scheduleList}
+          </details>
+        </div>`;
+    }
+
+    venues.forEach(venue => {
+      const marker = L.marker([venue.lat, venue.lng], { icon: makeMarkerIcon(venue.code) }).addTo(map);
+      marker.bindPopup(popupHtml(venue));
+      mapMarkers.set(venue.id, marker);
+
+      const line = L.polyline([[44.05, -75.76], [venue.lat, venue.lng]], {
+        color: countryFill[venue.code],
+        weight: 2.4,
+        opacity: 0.45,
+        dashArray: venue.practicalClass === 'air' ? '10,8' : null
+      }).addTo(map);
+      mapLines.set(venue.id, line);
+    });
+
+    function buildRankList(list) {
+      const rankList = document.getElementById('rankList');
+      rankList.innerHTML = list.map((venue, idx) => `
+        <div class="rank-item" data-id="${venue.id}">
+          <div class="rank-num">${idx + 1}</div>
+          <div>
+            <div class="rank-name">${venue.stadium}</div>
+            <div class="rank-meta">${venue.city} · ${venue.travelLabel}</div>
+          </div>
+          <div class="country-badge ${venue.code}">${venue.country}</div>
+        </div>`).join('');
+      rankList.querySelectorAll('.rank-item').forEach(el => {
+        el.addEventListener('click', () => focusVenue(el.dataset.id));
+      });
+    }
+
+    function buildBestGrid() {
+      const closest = [...venues].sort((a,b)=> a.distanceMiles - b.distanceMiles)[0];
+      const fastest = [...venues].sort((a,b)=> a.travelHours - b.travelHours)[0];
+      const canadaBest = venues.find(v => v.id === 'toronto');
+      const mexicoBest = venues.find(v => v.id === 'mexico-city');
+      const floridaBest = venues.find(v => v.id === 'miami');
+      document.getElementById('bestGrid').innerHTML = `
+        <div class="best-box">
+          <div class="best-label">Closest venue</div>
+          <div class="best-value">${closest.stadium}</div>
+          <div class="best-note">${closest.distanceMiles} miles from Fort Drum</div>
+        </div>
+        <div class="best-box">
+          <div class="best-label">Fastest realistic trip</div>
+          <div class="best-value">${fastest.stadium}</div>
+          <div class="best-note">${fastest.travelLabel}</div>
+        </div>
+        <div class="best-box">
+          <div class="best-label">Best international option</div>
+          <div class="best-value">${canadaBest.stadium}</div>
+          <div class="best-note">Quickest cross-border play with real upside</div>
+        </div>
+        <div class="best-box">
+          <div class="best-label">Best Mexico option</div>
+          <div class="best-value">${mexicoBest.stadium}</div>
+          <div class="best-note">Opening-match venue and biggest Mexico-stage payoff</div>
+        </div>
+        <div class="best-box">
+          <div class="best-label">Best Florida option</div>
+          <div class="best-value">${floridaBest.stadium}</div>
+          <div class="best-note">Best by air via Syracuse</div>
+        </div>
+      `;
+    }
+
+    function buildCards(list) {
+      document.getElementById('cardsGrid').innerHTML = list.map(venue => {
+        const next = firstMatch(venue);
+        return `
+          <article class="card stadium-card" data-id="${venue.id}">
+            <div class="country-badge ${venue.code}">${venue.country}</div>
+            <h3>${venue.stadium}</h3>
+            <div class="stadium-meta">${venue.city} · FIFA tournament name: ${venue.fifaName}</div>
+            <div class="kv-grid">
+              <div class="kv"><div class="k">Capacity</div><div class="v">${venue.capacity.toLocaleString()}</div></div>
+              <div class="kv"><div class="k">Distance</div><div class="v">${venue.distanceMiles.toLocaleString()} ${venue.distanceType === 'road' ? 'road mi' : 'air mi'}</div></div>
+              <div class="kv"><div class="k">Travel time</div><div class="v">${venue.travelLabel}</div></div>
+              <div class="kv"><div class="k">Next match</div><div class="v">${fmtDateShort(next.date)}</div></div>
+            </div>
+            <p class="note"><strong>${next.code} · ${next.stage}</strong><br>${next.fixture}</p>
+            <p class="note" style="margin-top:10px;">${venue.travelNote}</p>
+          </article>`;
+      }).join('');
+      document.querySelectorAll('.stadium-card').forEach(el => {
+        el.addEventListener('click', () => focusVenue(el.dataset.id));
+      });
+    }
+
+    function buildComparison(list) {
+      document.getElementById('comparisonBody').innerHTML = list.map(venue => `
+        <tr>
+          <td><strong>${venue.stadium}</strong><br><span style="color:var(--text-soft);font-size:12px">${venue.fifaName}</span></td>
+          <td>${venue.city}</td>
+          <td>${venue.country}</td>
+          <td>${venue.capacity.toLocaleString()}</td>
+          <td>${venue.distanceMiles.toLocaleString()} ${venue.distanceType === 'road' ? 'road mi' : 'air mi'}</td>
+          <td>${venue.travelLabel}</td>
+          <td>${venue.travelMode}</td>
+          <td>${fmtDateShort(firstMatch(venue).date)}</td>
+          <td>${venue.schedules.length}</td>
+        </tr>`).join('');
+    }
+
+    function buildSchedules() {
+      const list = venues.slice().sort((a,b)=> new Date(firstMatch(a).date) - new Date(firstMatch(b).date));
+      document.getElementById('scheduleGrid').innerHTML = list.map(venue => `
+        <section class="venue-schedule" id="schedule-${venue.id}">
+          <div class="venue-head">
+            <div>
+              <h3 class="venue-name">${venue.stadium}</h3>
+              <div class="stadium-meta">${venue.city} · ${venue.country} · capacity ${venue.capacity.toLocaleString()}</div>
+            </div>
+            <div class="country-badge ${venue.code}">${venue.country}</div>
+          </div>
+          <div class="matches">
+            ${venue.schedules.sort((a,b)=> new Date(a.date)-new Date(b.date)).map(match => `
+              <div class="match">
+                <div class="match-top">
+                  <span class="match-stage">${match.stage}</span>
+                  <span class="match-date">${fmtDate(match.date)}</span>
+                </div>
+                <div class="match-fixture">${match.fixture}</div>
+                <div class="match-code">${match.code}</div>
+              </div>`).join('')}
+          </div>
+        </section>`).join('');
+    }
+
+    function buildCalendar() {
+      const allMatches = venues.flatMap(v => v.schedules.map(m => ({...m, venue: v.stadium, country: v.country, venueId: v.id})));
+      const grouped = allMatches.sort((a,b)=> new Date(a.date)-new Date(b.date)).reduce((acc, match) => {
+        const d = new Date(match.date);
+        const monthKey = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        const dayKey = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' });
+        acc[monthKey] ??= {};
+        acc[monthKey][dayKey] ??= [];
+        acc[monthKey][dayKey].push(match);
+        return acc;
+      }, {});
+
+      document.getElementById('calendarWrap').innerHTML = Object.entries(grouped).map(([month, days]) => `
+        <section class="month">
+          <h3>${month}</h3>
+          <div class="agenda">
+            ${Object.entries(days).map(([day, events]) => `
+              <div class="day">
+                <div class="day-head">
+                  <div class="day-date">${day}</div>
+                  <div class="day-count">${events.length} match${events.length > 1 ? 'es' : ''}</div>
+                </div>
+                <div class="event-list">
+                  ${events.map(event => `<div class="event-item"><strong>${event.code}</strong> · ${event.fixture}<br>${event.stage} · ${event.venue}</div>`).join('')}
+                </div>
+              </div>`).join('')}
+          </div>
+        </section>`).join('');
+    }
+
+    function buildSummary() {
+      document.getElementById('summaryGrid').innerHTML = `
+        <div class="summary-box">
+          <h3>Which stadium is closest to Fort Drum?</h3>
+          <p class="note"><strong>BMO Field in Toronto.</strong> It is the shortest trip in this set at about 217 road miles and roughly 4 hours, assuming a normal border crossing.</p>
+        </div>
+        <div class="summary-box">
+          <h3>Which one is the easiest realistic trip?</h3>
+          <p class="note"><strong>Toronto overall.</strong> If you want to avoid the border and stay domestic, <strong>MetLife Stadium</strong> is the easiest U.S.-only answer.</p>
+        </div>
+        <div class="summary-box">
+          <h3>Which Canadian option makes the most sense?</h3>
+          <p class="note"><strong>Toronto, not Vancouver.</strong> Toronto is a practical Fort Drum trip. Vancouver is a full flight commitment and only makes sense if you specifically want the west-coast version of this tournament.</p>
+        </div>
+        <div class="summary-box">
+          <h3>Which Mexico venue is the best travel option?</h3>
+          <p class="note"><strong>Mexico City.</strong> In this planner it is the best Mexico choice because it gives you the opening match venue and the biggest marquee payoff, even though it is clearly a flight trip.</p>
+        </div>
+        <div class="summary-box">
+          <h3>Is Miami worth it compared with the northeastern venues?</h3>
+          <p class="note"><strong>Only if the fixture or the destination matters to you.</strong> For pure convenience, Toronto, MetLife, and Philadelphia win easily. Miami becomes worth it if you want the Florida trip itself or specifically want its match slate, quarter-final, or bronze final.</p>
+        </div>
+        <div class="summary-box">
+          <h3>What is the smart shortlist?</h3>
+          <p class="note"><strong>Tier 1:</strong> Toronto and MetLife. <strong>Tier 2:</strong> Philadelphia. <strong>Tier 3:</strong> Miami. <strong>Tier 4:</strong> Mexico City and Vancouver unless you are intentionally building a bigger trip around them.</p>
+        </div>`;
+    }
+
+    function focusVenue(id) {
+      const venue = venues.find(v => v.id === id);
+      if (!venue) return;
+      map.flyTo([venue.lat, venue.lng], venue.practicalClass === 'road' ? 7 : 4.5, { duration: 1.1 });
+      const marker = mapMarkers.get(id);
+      if (marker) marker.openPopup();
+      document.getElementById(`schedule-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function refresh() {
+      const list = getFilteredVenues();
+      buildRankList(list);
+      buildCards(list);
+      buildComparison(list);
+      buildBestGrid();
+      buildSummary();
+
+      venues.forEach(v => {
+        const visible = currentCountry === 'All' || v.country === currentCountry;
+        const marker = mapMarkers.get(v.id);
+        const line = mapLines.get(v.id);
+        if (visible) {
+          marker.addTo(map);
+          line.addTo(map);
+        } else {
+          map.removeLayer(marker);
+          map.removeLayer(line);
+        }
+      });
+    }
+
+    document.getElementById('sortSelect').addEventListener('change', e => {
+      currentSort = e.target.value;
+      refresh();
+    });
+
+    document.querySelectorAll('.pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCountry = btn.dataset.country;
+        refresh();
+      });
+    });
+
+    buildSchedules();
+    buildCalendar();
+    refresh();
+  </script>
+</body>
+</html>
