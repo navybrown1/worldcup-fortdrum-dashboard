@@ -162,6 +162,13 @@
       opacity: 0.55;
     }
     .nav-list a:hover,
+    .nav-list a:focus-visible {
+      transform: translateX(2px);
+      color: var(--text);
+      background: linear-gradient(90deg, rgba(255, 63, 147, 0.08), rgba(255, 63, 147, 0.02));
+      border-color: rgba(255, 63, 147, 0.14);
+      outline: none;
+    }
     .nav-list a.active {
       transform: translateX(3px);
       color: var(--text);
@@ -169,6 +176,9 @@
       border-color: rgba(255, 63, 147, 0.22);
     }
     .sidebar-note {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
       padding: 16px;
       border-radius: 20px;
       background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
@@ -194,6 +204,7 @@
       margin: 0;
       color: var(--text-soft);
       font-size: 0.92rem;
+      word-break: break-word;
     }
 
     .workspace {
@@ -418,6 +429,41 @@
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+    .hero-mini-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .hero-mini-card {
+      padding: 13px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+    }
+    .hero-mini-card span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text-faint);
+      font-size: 0.64rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 800;
+    }
+    .hero-mini-card strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: 0.98rem;
+      letter-spacing: -0.03em;
+    }
+    .hero-mini-card p {
+      margin: 0;
+      max-width: none;
+      color: var(--text-soft);
+      font-size: 0.82rem;
+      line-height: 1.45;
     }
     .rule-dot {
       width: 9px;
@@ -947,6 +993,12 @@
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 4;
     }
+    .atlas-card.expanded .atlas-note,
+    .atlas-card.expanded .atlas-story p {
+      display: block;
+      overflow: visible;
+      -webkit-line-clamp: unset;
+    }
     .atlas-story-grid {
       display: grid;
       gap: 10px;
@@ -1011,7 +1063,6 @@
       font-weight: 700;
     }
     .atlas-jump {
-      margin-top: auto;
       width: 100%;
       border: 1px solid rgba(51,230,255,0.18);
       background: linear-gradient(90deg, rgba(51,230,255,0.16), rgba(92,124,255,0.14));
@@ -1027,6 +1078,37 @@
       transform: translateY(-1px);
       border-color: rgba(51,230,255,0.3);
       background: linear-gradient(90deg, rgba(51,230,255,0.22), rgba(92,124,255,0.18));
+    }
+    .atlas-actions {
+      margin-top: auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
+    .atlas-actions.dual {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .atlas-expand {
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      cursor: pointer;
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+      min-width: 132px;
+    }
+    .atlas-expand:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.07);
+    }
+    .atlas-grid > .atlas-card:last-child {
+      grid-column: 1 / -1;
+      max-width: min(580px, 100%);
+      justify-self: center;
     }
     .profile-layout {
       display: grid;
@@ -1201,7 +1283,7 @@
       font-weight: 800;
     }
     select,
-    button.filter-btn {
+    .filter-readout {
       width: 100%;
       border: 1px solid rgba(255,255,255,0.08);
       background: rgba(255,255,255,0.05);
@@ -1209,13 +1291,26 @@
       padding: 14px 16px;
       border-radius: 16px;
       outline: none;
+      min-height: 58px;
+    }
+    select {
       transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
     }
-    select:hover,
-    button.filter-btn:hover {
+    select:hover {
       transform: translateY(-1px);
       border-color: rgba(51,230,255,0.22);
       background: rgba(255,255,255,0.07);
+    }
+    .filter-readout strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--text);
+      font-size: 0.92rem;
+      letter-spacing: -0.02em;
+    }
+    .filter-readout span {
+      color: var(--text-soft);
+      font-size: 0.78rem;
     }
     .country-pills {
       display: flex;
@@ -1366,6 +1461,11 @@
       gap: 22px;
       align-items: start;
       margin-bottom: 24px;
+    }
+    .summary-card {
+      position: sticky;
+      top: 24px;
+      align-self: start;
     }
     .table-card,
     .insights-card,
@@ -1616,6 +1716,55 @@
       filter: drop-shadow(0 16px 30px rgba(0,0,0,0.3));
       animation: pulseFloat 3.2s ease-in-out infinite;
     }
+    .schedule-note,
+    .table-note {
+      margin: 10px 24px 0;
+      color: var(--text-faint);
+      font-size: 0.8rem;
+    }
+    .table-wrap {
+      overflow: auto;
+      margin-top: 10px;
+    }
+    .page-footer {
+      margin-top: 28px;
+      padding: 20px 24px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(22px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+    }
+    .page-footer-copy strong {
+      display: block;
+      margin-bottom: 6px;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.04rem;
+      letter-spacing: -0.03em;
+    }
+    .page-footer-copy p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.9rem;
+    }
+    .back-to-top {
+      border: 1px solid rgba(51,230,255,0.18);
+      background: linear-gradient(90deg, rgba(51,230,255,0.16), rgba(92,124,255,0.14));
+      color: var(--text);
+      padding: 13px 18px;
+      border-radius: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.22s ease, border-color 0.22s ease;
+    }
+    .back-to-top:hover {
+      transform: translateY(-1px);
+      border-color: rgba(51,230,255,0.32);
+    }
 
     .marker-pin {
       width: 18px;
@@ -1764,7 +1913,11 @@
       .atlas-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+      .atlas-grid > .atlas-card:last-child {
+        grid-column: 1 / -1;
+      }
       .side-panel { position: static; }
+      .summary-card { position: static; }
       .controls {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -1793,6 +1946,9 @@
       .venue-deck,
       .profile-card {
         padding: 18px;
+      }
+      .hero-mini-grid {
+        grid-template-columns: 1fr;
       }
       .hero-visual {
         min-height: 360px;
@@ -1838,11 +1994,21 @@
       .atlas-grid {
         grid-template-columns: 1fr;
       }
+      .atlas-actions.dual {
+        grid-template-columns: 1fr;
+      }
+      .atlas-grid > .atlas-card:last-child {
+        grid-column: auto;
+        max-width: 100%;
+      }
       .atlas-facts,
       .atlas-thumbs {
         grid-template-columns: 1fr;
       }
       .fact-strip {
+        grid-template-columns: 1fr;
+      }
+      .page-footer {
         grid-template-columns: 1fr;
       }
     }
@@ -1862,7 +2028,7 @@
         <nav class="nav-list">
           <a class="active" href="#overview">Overview</a>
           <a href="#venues">Venues</a>
-          <a href="#profile-section">Gallery</a>
+          <a href="#atlas-section">Gallery</a>
           <a href="#map-section">Map</a>
           <a href="#schedule-section">Schedule</a>
           <a href="#calendar-section">Calendar</a>
@@ -1897,11 +2063,33 @@
           <p>Actual stadium photography, city galleries, city history, and a Fort Drum route read that stays practical without feeling generic.</p>
           <div class="hero-actions">
             <a class="hero-btn primary" href="#venues">Open venue deck</a>
-            <a class="hero-btn secondary" href="#profile-section">Jump to gallery</a>
+            <a class="hero-btn secondary" href="#atlas-section">Open host atlas</a>
           </div>
           <div class="hero-rules">
             <div><span class="rule-dot road"></span> Drive-first: Toronto, MetLife, and Philadelphia</div>
             <div><span class="rule-dot air"></span> Flight-first: Miami, Mexico City, and Vancouver</div>
+          </div>
+          <div class="hero-mini-grid">
+            <div class="hero-mini-card">
+              <span>Closest host</span>
+              <strong>BMO Field</strong>
+              <p>Toronto is still the cleanest border-crossing play from Fort Drum.</p>
+            </div>
+            <div class="hero-mini-card">
+              <span>Best U.S. upside</span>
+              <strong>MetLife Stadium</strong>
+              <p>Domestic routing plus the final keeps New York New Jersey on top.</p>
+            </div>
+            <div class="hero-mini-card">
+              <span>Best weekend drive</span>
+              <strong>Philadelphia</strong>
+              <p>It stays road-trip realistic without losing big-city payoff.</p>
+            </div>
+            <div class="hero-mini-card">
+              <span>Fly only if it matters</span>
+              <strong>Miami, Mexico City, Vancouver</strong>
+              <p>Those are destination trips, not convenience picks.</p>
+            </div>
           </div>
         </div>
 
@@ -2000,11 +2188,11 @@
             </div>
             <div class="control">
               <label>Travel rule</label>
-              <button class="filter-btn" id="modeBtn">Showing practical mode per venue</button>
+              <div class="filter-readout" id="modeReadout"></div>
             </div>
             <div class="control">
               <label>Calendar scope</label>
-              <button class="filter-btn" id="calendarBtn">All confirmed games at these six venues</button>
+              <div class="filter-readout" id="calendarReadout"></div>
             </div>
           </div>
 
@@ -2047,7 +2235,8 @@
               <p class="section-subtitle">The fast scan: capacity, travel demand, match count, and the first date in market.</p>
             </div>
           </div>
-          <div style="overflow:auto;">
+          <div class="table-note">Comparison data stays readable on desktop. On smaller widths, scroll horizontally for the full row set.</div>
+          <div class="table-wrap">
             <table>
               <thead>
                 <tr>
@@ -2103,6 +2292,7 @@
             <p class="section-subtitle">Every confirmed match currently assigned to the six stadiums in this dashboard. Select a venue above and its schedule block lights up here too.</p>
           </div>
         </div>
+        <div class="schedule-note">Bracket note: <strong>W85</strong> means winner of Match 85. Codes like <strong>1B</strong> mean first place in Group B.</div>
         <div class="schedule-grid" id="scheduleGrid"></div>
       </section>
 
@@ -2127,6 +2317,14 @@
           <div class="summary-grid" id="summaryGrid"></div>
         </section>
       </section>
+
+      <footer class="page-footer">
+        <div class="page-footer-copy">
+          <strong>Fort Drum 2026 World Cup Travel Planner</strong>
+          <p>Route guidance is editorial, map data comes from OpenStreetMap/CARTO, and venue imagery uses your local deck assets plus curated Wikimedia photos where needed. Keyboard focus states, smoother section navigation, and a back-to-top action are now built in.</p>
+        </div>
+        <button class="back-to-top" id="backToTopBtn" type="button">Back to top</button>
+      </footer>
     </main>
   </div>
 
@@ -2642,7 +2840,7 @@
         country: 'United States',
         code: 'usa',
         badge: 'Reference',
-        cover: 'assets/deck/image-14-5.jpeg',
+        cover: 'assets/deck/image-14-6.jpeg',
         thumbs: [
           { src: 'assets/deck/image-14-7.jpeg', label: 'Houston downtown' },
           { src: 'assets/deck/image-14-8.jpeg', label: 'Houston at sunset' }
@@ -2860,7 +3058,7 @@
     let currentSort = 'distance';
     let activeVenueId = 'toronto';
 
-    const map = L.map('map', { zoomControl: true, scrollWheelZoom: true }).setView([44.05, -75.76], 4.75);
+    const map = L.map('map', { zoomControl: true, scrollWheelZoom: false }).setView([44.05, -75.76], 4.75);
     const heroMap = L.map('heroMap', {
       zoomControl: false,
       scrollWheelZoom: false,
@@ -2972,7 +3170,8 @@
 
     venues.forEach(venue => {
       const marker = L.marker([venue.lat, venue.lng], { icon: makeMarkerIcon(venue.code) }).addTo(map);
-      marker.bindPopup(popupHtml(venue));
+      marker.bindPopup(popupHtml(venue), { autoClose: true, closeOnClick: true });
+      marker.on('click', () => focusVenue(venue.id, { fly: false, openPopups: false }));
       mapMarkers.set(venue.id, marker);
 
       const line = L.polyline([[44.05, -75.76], [venue.lat, venue.lng]], {
@@ -2984,14 +3183,16 @@
       mapLines.set(venue.id, line);
 
       const heroMarker = L.circleMarker([venue.lat, venue.lng], makeHeroMarkerStyle(venue, venue.id === activeVenueId)).addTo(heroMap);
-      heroMarker.bindPopup(popupHtml(venue));
-      heroMarker.on('click', () => focusVenue(venue.id));
+      heroMarker.bindPopup(popupHtml(venue), { autoClose: true, closeOnClick: true });
+      heroMarker.on('click', () => focusVenue(venue.id, { openMainPopup: false }));
       heroMarkers.set(venue.id, heroMarker);
     });
 
     heroMap.fitBounds(L.latLngBounds(venues.map(venue => [venue.lat, venue.lng])), {
       padding: [24, 24]
     });
+    map.on('popupclose', () => heroMap.closePopup());
+    heroMap.on('popupclose', () => map.closePopup());
 
     function buildRankList(list) {
       const rankList = document.getElementById('rankList');
@@ -3009,39 +3210,54 @@
       });
     }
 
-    function buildBestGrid() {
-      const closest = [...venues].sort((a,b)=> a.distanceMiles - b.distanceMiles)[0];
-      const fastest = [...venues].sort((a,b)=> a.travelHours - b.travelHours)[0];
-      const canadaBest = venues.find(v => v.id === 'toronto');
-      const mexicoBest = venues.find(v => v.id === 'mexico-city');
-      const floridaBest = venues.find(v => v.id === 'miami');
+    function buildBestGrid(list) {
+      const scoped = list.length ? list : venues;
+      const closest = [...scoped].sort((a,b)=> a.distanceMiles - b.distanceMiles)[0];
+      const fastest = [...scoped].sort((a,b)=> a.travelHours - b.travelHours)[0];
+      const largest = [...scoped].sort((a,b)=> b.capacity - a.capacity)[0];
+      const earliest = [...scoped].sort((a,b)=> new Date(firstMatch(a).date) - new Date(firstMatch(b).date))[0];
+      const scopeLabel = currentCountry === 'All' ? 'current shortlist' : currentCountry;
       document.getElementById('bestGrid').innerHTML = `
         <div class="best-box">
-          <div class="best-label">Closest venue</div>
+          <div class="best-label">Closest in ${scopeLabel}</div>
           <div class="best-value">${closest.stadium}</div>
           <div class="best-note">${closest.distanceMiles} miles from Fort Drum</div>
         </div>
         <div class="best-box">
-          <div class="best-label">Fastest realistic trip</div>
+          <div class="best-label">Fastest in ${scopeLabel}</div>
           <div class="best-value">${fastest.stadium}</div>
           <div class="best-note">${fastest.travelLabel}</div>
         </div>
         <div class="best-box">
-          <div class="best-label">Best international option</div>
-          <div class="best-value">${canadaBest.stadium}</div>
-          <div class="best-note">Quickest cross-border play with real upside</div>
+          <div class="best-label">Largest venue in scope</div>
+          <div class="best-value">${largest.stadium}</div>
+          <div class="best-note">${largest.capacity.toLocaleString()} seats</div>
         </div>
         <div class="best-box">
-          <div class="best-label">Best Mexico option</div>
-          <div class="best-value">${mexicoBest.stadium}</div>
-          <div class="best-note">Opening-match venue and biggest Mexico-stage payoff</div>
-        </div>
-        <div class="best-box">
-          <div class="best-label">Best Florida option</div>
-          <div class="best-value">${floridaBest.stadium}</div>
-          <div class="best-note">Best by air via Syracuse</div>
+          <div class="best-label">Earliest match in scope</div>
+          <div class="best-value">${earliest.stadium}</div>
+          <div class="best-note">${fmtDateShort(firstMatch(earliest).date)} · ${firstMatch(earliest).fixture}</div>
         </div>
       `;
+    }
+
+    function buildControlReadouts(list) {
+      const totalMatches = list.reduce((sum, venue) => sum + venue.schedules.length, 0);
+      const scopeLabel = currentCountry === 'All' ? 'All shortlisted hosts' : `${currentCountry} hosts`;
+      document.getElementById('modeReadout').innerHTML = `
+        <strong>Practical routing</strong>
+        <span>Each venue stays locked to its realistic drive-first or air-first rule from Fort Drum.</span>
+      `;
+      document.getElementById('calendarReadout').innerHTML = `
+        <strong>${scopeLabel}</strong>
+        <span>${totalMatches} confirmed matches in the active map scope.</span>
+      `;
+    }
+
+    function fitMapToVisibleVenues(list) {
+      if (!list.length) return;
+      const points = [[44.05, -75.76], ...list.map(venue => [venue.lat, venue.lng])];
+      map.fitBounds(L.latLngBounds(points), { padding: [42, 42] });
     }
 
     function buildHeroBrief() {
@@ -3126,6 +3342,7 @@
     }
 
     function buildHostAtlasCard(host) {
+      const isShortlist = venues.some(venue => venue.id === host.id);
       return `
         <article class="atlas-card">
           <div class="atlas-cover">
@@ -3168,7 +3385,10 @@
                 </div>
               `).join('')}
             </div>
-            ${venues.some(venue => venue.id === host.id) ? `<button class="atlas-jump" type="button" data-id="${host.id}">Open this host in the detailed Fort Drum planner</button>` : ''}
+            <div class="atlas-actions ${isShortlist ? 'dual' : ''}">
+              ${isShortlist ? `<button class="atlas-jump" type="button" data-id="${host.id}">Open this host in the detailed Fort Drum planner</button>` : ''}
+              <button class="atlas-expand" type="button" data-action="expand">${isShortlist ? 'Read more' : 'Open brief'}</button>
+            </div>
           </div>
         </article>`;
     }
@@ -3179,6 +3399,14 @@
         btn.addEventListener('click', () => {
           focusVenue(btn.dataset.id);
           document.getElementById('profile-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+      document.querySelectorAll('.atlas-expand').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const card = btn.closest('.atlas-card');
+          if (!card) return;
+          card.classList.toggle('expanded');
+          btn.textContent = card.classList.contains('expanded') ? 'Collapse brief' : (card.querySelector('.atlas-jump') ? 'Read more' : 'Open brief');
         });
       });
     }
@@ -3346,19 +3574,38 @@
         </div>`;
     }
 
-    function focusVenue(id) {
+    function focusVenue(id, options = {}) {
+      const {
+        fly = true,
+        openPopups = true,
+        openMainPopup = openPopups,
+        openHeroPopup = openPopups
+      } = options;
       const venue = venues.find(v => v.id === id);
       if (!venue) return;
       activeVenueId = id;
       buildHeroBrief();
       buildProfilePanel();
       syncActiveState();
-      map.flyTo([venue.lat, venue.lng], venue.practicalClass === 'road' ? 7 : 4.5, { duration: 1.1 });
-      const marker = mapMarkers.get(id);
-      if (marker) marker.openPopup();
-      const heroMarker = heroMarkers.get(id);
-      if (heroMarker) heroMarker.openPopup();
-      document.getElementById(`schedule-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (fly) {
+        map.flyTo([venue.lat, venue.lng], venue.practicalClass === 'road' ? 6.8 : 4.8, { duration: 1.1 });
+      }
+      map.closePopup();
+      heroMap.closePopup();
+      if (openMainPopup) {
+        const marker = mapMarkers.get(id);
+        if (marker) marker.openPopup();
+      }
+      if (openHeroPopup) {
+        const heroMarker = heroMarkers.get(id);
+        if (heroMarker) heroMarker.openPopup();
+      }
+    }
+
+    function syncCountryPills() {
+      document.querySelectorAll('.pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.country === currentCountry);
+      });
     }
 
     function refresh() {
@@ -3369,11 +3616,13 @@
       buildRankList(list);
       buildCards(list);
       buildComparison(list);
-      buildBestGrid();
+      buildBestGrid(list);
+      buildControlReadouts(list);
       buildSummary();
       buildHeroBrief();
       buildProfilePanel();
       buildHostAtlas();
+      syncCountryPills();
       syncActiveState();
 
       venues.forEach(v => {
@@ -3388,6 +3637,9 @@
           map.removeLayer(line);
         }
       });
+      map.closePopup();
+      heroMap.closePopup();
+      fitMapToVisibleVenues(list);
     }
 
     document.getElementById('sortSelect').addEventListener('change', e => {
@@ -3397,21 +3649,80 @@
 
     document.querySelectorAll('.pill').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
         currentCountry = btn.dataset.country;
         refresh();
       });
     });
 
     document.querySelectorAll('.hero-map-chip').forEach(btn => {
-      btn.addEventListener('click', () => focusVenue(btn.dataset.venue));
+      btn.addEventListener('click', () => focusVenue(btn.dataset.venue, { openMainPopup: false }));
+    });
+
+    const navLinks = Array.from(document.querySelectorAll('.nav-list a'));
+    const trackedSections = navLinks
+      .map(link => document.querySelector(link.getAttribute('href')))
+      .filter(Boolean);
+
+    function setActiveNav(sectionId) {
+      navLinks.forEach(link => {
+        const active = link.getAttribute('href') === `#${sectionId}`;
+        link.classList.toggle('active', active);
+        if (active) {
+          link.setAttribute('aria-current', 'page');
+        } else {
+          link.removeAttribute('aria-current');
+        }
+      });
+    }
+
+    function scrollToSection(hash, updateHash = true) {
+      const target = document.querySelector(hash);
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActiveNav(target.id);
+      if (updateHash) {
+        history.replaceState(null, '', hash);
+      }
+    }
+
+    function syncNavWithScroll() {
+      const targetLine = window.innerHeight * 0.24;
+      let bestSection = trackedSections[0];
+      let bestDelta = Number.POSITIVE_INFINITY;
+      trackedSections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.bottom < 80 || rect.top > window.innerHeight - 80) return;
+        const delta = Math.abs(rect.top - targetLine);
+        if (delta < bestDelta) {
+          bestDelta = delta;
+          bestSection = section;
+        }
+      });
+      if (bestSection) {
+        setActiveNav(bestSection.id);
+      }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', event => {
+        const hash = link.getAttribute('href');
+        const target = hash && document.querySelector(hash);
+        if (!target) return;
+        event.preventDefault();
+        scrollToSection(hash);
+      });
+    });
+
+    document.getElementById('backToTopBtn').addEventListener('click', () => {
+      scrollToSection('#overview');
     });
 
     window.addEventListener('resize', () => {
       map.invalidateSize();
       heroMap.invalidateSize();
+      syncNavWithScroll();
     });
+    window.addEventListener('scroll', syncNavWithScroll, { passive: true });
 
     buildSchedules();
     buildCalendar();
@@ -3419,6 +3730,11 @@
     setTimeout(() => {
       map.invalidateSize();
       heroMap.invalidateSize();
+      if (location.hash && document.querySelector(location.hash)) {
+        scrollToSection(location.hash, false);
+      } else {
+        syncNavWithScroll();
+      }
     }, 0);
   </script>
 </body>
