@@ -865,7 +865,7 @@
     }
     .atlas-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 18px;
       align-items: stretch;
     }
@@ -991,13 +991,19 @@
       display: -webkit-box;
       overflow: hidden;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 4;
+      -webkit-line-clamp: 3;
     }
-    .atlas-card.expanded .atlas-note,
-    .atlas-card.expanded .atlas-story p {
+    .atlas-card.expanded .atlas-note {
       display: block;
       overflow: visible;
       -webkit-line-clamp: unset;
+    }
+    .atlas-extra {
+      display: none;
+      gap: 12px;
+    }
+    .atlas-card.expanded .atlas-extra {
+      display: grid;
     }
     .atlas-story-grid {
       display: grid;
@@ -1022,17 +1028,13 @@
       margin: 0;
       color: var(--text-soft);
       font-size: 0.86rem;
-      display: -webkit-box;
-      overflow: hidden;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 4;
     }
-    .atlas-thumbs {
+    .atlas-support {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
     }
-    .atlas-thumb {
+    .atlas-support-shot {
       position: relative;
       min-height: 118px;
       overflow: hidden;
@@ -1040,19 +1042,19 @@
       border: 1px solid rgba(255,255,255,0.06);
       background: rgba(255,255,255,0.04);
     }
-    .atlas-thumb img {
+    .atlas-support-shot img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
-    .atlas-thumb::after {
+    .atlas-support-shot::after {
       content: "";
       position: absolute;
       inset: 0;
       background: linear-gradient(180deg, rgba(5,8,18,0.06), rgba(5,8,18,0.72));
     }
-    .atlas-thumb span {
+    .atlas-support-shot span {
       position: absolute;
       left: 10px;
       right: 10px;
@@ -1106,20 +1108,23 @@
       background: rgba(255,255,255,0.07);
     }
     .atlas-grid > .atlas-card:last-child {
-      grid-column: 1 / -1;
-      max-width: min(580px, 100%);
-      justify-self: center;
+      grid-column: auto;
+      max-width: none;
+      justify-self: stretch;
     }
     .profile-layout {
       display: grid;
       grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
       gap: 22px;
+      align-items: start;
     }
     .profile-gallery {
       display: grid;
-      grid-template-columns: minmax(0, 1.15fr) 0.85fr;
+      grid-template-columns: 1fr;
       gap: 12px;
-      min-height: 420px;
+      min-height: 0;
+      align-content: start;
+      align-self: start;
     }
     .lead-shot,
     .gallery-shot {
@@ -1131,13 +1136,102 @@
       background: rgba(255,255,255,0.04);
       box-shadow: var(--shadow-soft);
     }
-    .lead-shot { min-height: 420px; }
+    .lead-shot {
+      min-height: auto;
+      aspect-ratio: 16 / 9;
+    }
     .gallery-column {
       display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
-      grid-template-rows: 1fr 1fr;
     }
-    .gallery-shot { min-height: 204px; }
+    .profile-sidecar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 120px;
+      gap: 16px;
+      align-items: center;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 36%),
+        linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      overflow: hidden;
+    }
+    .profile-sidecar.canada {
+      box-shadow: inset 0 0 0 1px rgba(255,77,147,0.08);
+    }
+    .profile-sidecar.usa {
+      box-shadow: inset 0 0 0 1px rgba(74,184,255,0.08);
+    }
+    .profile-sidecar.mexico {
+      box-shadow: inset 0 0 0 1px rgba(97,241,173,0.08);
+    }
+    .profile-sidecar-copy {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+    .profile-sidecar-kicker {
+      color: var(--text-faint);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 800;
+    }
+    .profile-sidecar-title {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.14rem;
+      letter-spacing: -0.04em;
+      word-spacing: 0.08em;
+    }
+    .profile-sidecar-note {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.9rem;
+    }
+    .profile-sidecar-metrics,
+    .profile-sidecar-cities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .profile-sidecar-metric,
+    .profile-sidecar-city {
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-soft);
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+    .profile-sidecar-metric strong {
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .profile-sidecar-art {
+      display: grid;
+      align-items: end;
+      justify-items: end;
+    }
+    .profile-sidecar-art img {
+      width: 100%;
+      max-width: 112px;
+      object-fit: contain;
+      filter: drop-shadow(0 18px 32px rgba(0,0,0,0.34));
+      animation: hostMascotFloat 5.8s ease-in-out infinite;
+      transition: transform 0.22s ease;
+      will-change: transform;
+    }
+    .profile-sidecar:hover .profile-sidecar-art img {
+      transform: translateY(-5px) scale(1.03);
+    }
+    .gallery-shot {
+      min-height: auto;
+      aspect-ratio: 4 / 3;
+    }
     .lead-shot img,
     .gallery-shot img {
       width: 100%;
@@ -1350,6 +1444,243 @@
       gap: 10px;
       padding: 0 24px 24px;
     }
+    .route-board {
+      margin-bottom: 24px;
+    }
+    .route-board-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      align-items: start;
+    }
+    .route-column {
+      display: grid;
+      gap: 22px;
+      align-content: start;
+    }
+    .route-panel {
+      padding: 24px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+    .compact-head {
+      padding: 0;
+    }
+    .compact-head .section-subtitle {
+      max-width: 42ch;
+    }
+    .route-list,
+    .route-best-grid {
+      gap: 12px;
+    }
+    .rank-foot {
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      display: grid;
+      gap: 12px;
+    }
+    .rank-foot h3 {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1rem;
+      letter-spacing: -0.04em;
+    }
+    .rank-foot p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.9rem;
+    }
+    .rank-foot-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .rank-foot-chips span {
+      padding: 8px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+    .route-notes {
+      display: grid;
+      gap: 12px;
+    }
+    .note-box {
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      font-size: 0.92rem;
+    }
+    .note-box strong {
+      color: var(--text);
+    }
+    .route-logic-art {
+      min-height: 172px;
+      display: grid;
+      place-items: center;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        radial-gradient(circle at top left, rgba(255,77,147,0.16), transparent 42%),
+        radial-gradient(circle at bottom right, rgba(51,230,255,0.18), transparent 46%),
+        rgba(255,255,255,0.03);
+      overflow: hidden;
+    }
+    .route-logic-art img {
+      width: min(92%, 300px);
+      filter: drop-shadow(0 18px 36px rgba(0,0,0,0.32));
+      animation: hostMascotFloat 6s ease-in-out infinite;
+      transition: transform 0.22s ease;
+      will-change: transform;
+    }
+    .route-logic-art:hover img {
+      transform: translateY(-4px) scale(1.03);
+    }
+    .spotlight-shell {
+      display: grid;
+      gap: 16px;
+    }
+    .nation-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .nation-tab {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      cursor: pointer;
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease, color 0.22s ease;
+    }
+    .nation-tab:hover,
+    .nation-tab.active {
+      transform: translateY(-1px);
+      color: var(--text);
+      background: rgba(255,255,255,0.07);
+    }
+    .nation-tab.canada.active { border-color: rgba(255,77,147,0.34); }
+    .nation-tab.usa.active { border-color: rgba(74,184,255,0.34); }
+    .nation-tab.mexico.active { border-color: rgba(97,241,173,0.34); }
+    .nation-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 168px;
+      gap: 18px;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03)),
+        radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 40%);
+      overflow: hidden;
+    }
+    .nation-card.canada {
+      box-shadow: inset 0 0 0 1px rgba(255,77,147,0.08);
+    }
+    .nation-card.usa {
+      box-shadow: inset 0 0 0 1px rgba(74,184,255,0.08);
+    }
+    .nation-card.mexico {
+      box-shadow: inset 0 0 0 1px rgba(97,241,173,0.08);
+    }
+    .nation-copy {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .nation-kicker {
+      color: var(--text-faint);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 800;
+    }
+    .nation-title {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.6rem;
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+    }
+    .nation-body {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.94rem;
+    }
+    .nation-counts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .nation-metric {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text-soft);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .nation-metric strong {
+      color: var(--text);
+      font-size: 1rem;
+      letter-spacing: -0.03em;
+    }
+    .nation-city-ribbon,
+    .nation-quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .nation-city-chip,
+    .nation-link {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+    .nation-link {
+      cursor: pointer;
+      transition: transform 0.22s ease, border-color 0.22s ease, color 0.22s ease, background 0.22s ease;
+    }
+    .nation-link:hover {
+      transform: translateY(-1px);
+      color: var(--text);
+      border-color: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.08);
+    }
+    .nation-mascot {
+      display: grid;
+      align-items: end;
+    }
+    .nation-mascot img {
+      width: 100%;
+      max-height: 240px;
+      object-fit: contain;
+      filter: drop-shadow(0 18px 36px rgba(0,0,0,0.34));
+      animation: hostMascotFloat 5.6s ease-in-out infinite;
+      transition: transform 0.22s ease;
+      will-change: transform;
+    }
+    .nation-card:hover .nation-mascot img {
+      transform: translateY(-6px) scale(1.03);
+    }
     .legend {
       display: inline-flex;
       align-items: center;
@@ -1475,11 +1806,6 @@
       padding-bottom: 24px;
     }
     .table-card > div:last-child,
-    .calendar-card > div:last-child,
-    .summary-card > div:last-child {
-      padding: 0 24px;
-    }
-    .schedules-card > div:last-child,
     .insights-card > div:last-child {
       padding: 0 24px;
     }
@@ -1538,84 +1864,232 @@
       font-size: 0.88rem;
     }
 
-    .schedule-grid {
+    .schedule-filter-strip {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 0 24px 18px;
+      scrollbar-width: thin;
+    }
+    .schedule-filter-strip::-webkit-scrollbar {
+      height: 8px;
+    }
+    .schedule-filter-strip::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.12);
+      border-radius: 999px;
+    }
+    .schedule-pill {
+      padding: 11px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease, color 0.22s ease;
+    }
+    .schedule-pill:hover,
+    .schedule-pill.active {
+      transform: translateY(-1px);
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.16);
+    }
+    .schedule-overview {
       display: grid;
       gap: 18px;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: minmax(0, 1fr) 340px;
+      padding: 0 24px 18px;
     }
-    .venue-schedule {
-      padding: 18px;
-      border-radius: 22px;
-      background: rgba(255,255,255,0.04);
+    .schedule-hero,
+    .schedule-support {
+      padding: 20px;
+      border-radius: 24px;
       border: 1px solid rgba(255,255,255,0.08);
-      transition: border-color 0.22s ease, transform 0.22s ease;
+      background: rgba(255,255,255,0.04);
     }
-    .venue-schedule.active {
-      border-color: rgba(255, 63, 147, 0.32);
-      transform: translateY(-2px);
+    .schedule-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 220px;
+      gap: 18px;
+      align-items: stretch;
     }
-    .venue-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-      margin-bottom: 14px;
+    .schedule-hero-copy {
+      display: grid;
+      gap: 14px;
+      align-content: start;
     }
-    .venue-name {
+    .schedule-kicker {
+      color: var(--text-faint);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 800;
+    }
+    .schedule-title {
       margin: 0;
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      font-size: 1.18rem;
-      letter-spacing: -0.04em;
-      color: var(--text);
+      font-size: clamp(1.7rem, 2vw, 2.4rem);
+      line-height: 0.98;
+      letter-spacing: -0.05em;
     }
-    .matches {
+    .schedule-meta {
+      color: var(--text-soft);
+      font-size: 0.94rem;
+    }
+    .schedule-stage-grid {
       display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
     }
-    .match {
-      padding: 13px 14px;
+    .schedule-stat {
+      padding: 12px 13px;
       border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
       background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
     }
-    .match-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .match-stage {
-      display: inline-flex;
-      padding: 6px 11px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 800;
-      background: rgba(51, 230, 255, 0.12);
-      color: var(--accent-cyan);
-    }
-    .match-date {
-      font-size: 0.74rem;
-      font-weight: 800;
-      color: var(--warning);
+    .schedule-stat span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text-faint);
+      font-size: 0.64rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.15em;
+      font-weight: 800;
     }
-    .match-fixture {
+    .schedule-stat strong {
       color: var(--text);
+      font-size: 0.92rem;
+      letter-spacing: -0.03em;
+    }
+    .schedule-hero-media {
+      position: relative;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 220px;
+      background: rgba(255,255,255,0.04);
+    }
+    .schedule-hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .schedule-hero-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(5,8,18,0.1), rgba(5,8,18,0.76));
+    }
+    .schedule-hero-caption {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 1;
+      padding: 12px 13px;
+      border-radius: 16px;
+      background: rgba(5,8,18,0.74);
+      border: 1px solid rgba(255,255,255,0.08);
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+    .schedule-support {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+    .schedule-support h3 {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.08rem;
+      letter-spacing: -0.04em;
+    }
+    .support-card {
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+    }
+    .support-card strong {
+      color: var(--text);
+    }
+    .support-card p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 0.9rem;
+    }
+    .support-card-list {
+      display: grid;
+      gap: 8px;
+    }
+    .schedule-timeline {
+      display: grid;
+      gap: 12px;
+      padding: 0 24px 24px;
+    }
+    .timeline-match {
+      display: grid;
+      grid-template-columns: 160px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 16px 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+    }
+    .timeline-match.active,
+    .timeline-match:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 63, 147, 0.22);
+      background: rgba(255,255,255,0.06);
+    }
+    .timeline-date {
+      color: var(--text);
+      font-size: 0.88rem;
       font-weight: 800;
       letter-spacing: -0.02em;
     }
-    .match-code {
-      margin-top: 4px;
+    .timeline-fixture {
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 1.06rem;
+      letter-spacing: -0.03em;
+    }
+    .timeline-meta {
       color: var(--text-soft);
-      font-size: 0.78rem;
+      font-size: 0.84rem;
+    }
+    .timeline-code {
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
     }
 
+    .calendar-summary {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      padding: 0 24px 18px;
+    }
     .calendar-wrap {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 14px;
+      padding: 0 24px 24px;
     }
     .day {
       display: grid;
@@ -1684,6 +2158,7 @@
         radial-gradient(circle at 85% 22%, rgba(255,77,147,0.16), transparent 34%),
         linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
       overflow: hidden;
+      grid-column: span 2;
     }
     .summary-feature-copy h3 {
       margin: 0 0 10px;
@@ -1714,7 +2189,7 @@
       max-height: 170px;
       object-fit: contain;
       filter: drop-shadow(0 16px 30px rgba(0,0,0,0.3));
-      animation: pulseFloat 3.2s ease-in-out infinite;
+      animation: hostMascotFloat 6.2s ease-in-out infinite;
     }
     .schedule-note,
     .table-note {
@@ -1871,6 +2346,10 @@
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-8px); }
     }
+    @keyframes hostMascotFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(-1.5deg); }
+    }
 
     @media (max-width: 1380px) {
       .hero {
@@ -1906,15 +2385,13 @@
       .profile-layout,
       .layout,
       .panel-grid,
-      .schedule-grid,
+      .route-board-grid,
+      .schedule-overview,
       .calendar-wrap {
         grid-template-columns: 1fr;
       }
       .atlas-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .atlas-grid > .atlas-card:last-child {
-        grid-column: 1 / -1;
       }
       .side-panel { position: static; }
       .summary-card { position: static; }
@@ -1962,6 +2439,17 @@
         padding-left: 18px;
         padding-right: 18px;
       }
+      .route-panel,
+      .schedule-overview,
+      .schedule-filter-strip,
+      .calendar-summary,
+      .calendar-wrap {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+      .schedule-overview {
+        padding-bottom: 18px;
+      }
       #map {
         height: 430px;
         margin-left: 18px;
@@ -1975,9 +2463,6 @@
       .calendar-card .section-head,
       .summary-card .section-head,
       .table-card > div:last-child,
-      .calendar-card > div:last-child,
-      .summary-card > div:last-child,
-      .schedules-card > div:last-child,
       .insights-card > div:last-child {
         padding-left: 18px;
         padding-right: 18px;
@@ -1988,7 +2473,11 @@
       .profile-gallery,
       .profile-columns,
       .hero-stack,
-      .summary-feature {
+      .summary-feature,
+      .schedule-hero,
+      .schedule-stage-grid,
+      .atlas-support,
+      .profile-sidecar {
         grid-template-columns: 1fr;
       }
       .atlas-grid {
@@ -1997,16 +2486,22 @@
       .atlas-actions.dual {
         grid-template-columns: 1fr;
       }
-      .atlas-grid > .atlas-card:last-child {
-        grid-column: auto;
-        max-width: 100%;
-      }
-      .atlas-facts,
-      .atlas-thumbs {
+      .atlas-facts {
         grid-template-columns: 1fr;
       }
       .fact-strip {
         grid-template-columns: 1fr;
+      }
+      .nation-card,
+      .schedule-overview,
+      .timeline-match {
+        grid-template-columns: 1fr;
+      }
+      .profile-sidecar-art {
+        justify-items: center;
+      }
+      .summary-feature {
+        grid-column: auto;
       }
       .page-footer {
         grid-template-columns: 1fr;
@@ -2152,79 +2647,113 @@
         <div class="section-head">
           <div>
             <h2 class="section-title">Full 2026 host venue atlas</h2>
-            <p class="section-subtitle">All 16 host venues for knowledge and reference. The detailed Fort Drum routing engine stays focused on the shortlist, but the atlas gives you the broader tournament landscape with deck-sourced photos and city cues.</p>
+            <p class="section-subtitle">All 16 host venues for knowledge and reference. The detailed Fort Drum routing engine stays focused on the shortlist, but the atlas now uses a sharper local 2026 media layer so the broader tournament view still reads professionally.</p>
           </div>
         </div>
         <div class="atlas-grid" id="atlasGrid"></div>
       </section>
 
-      <section class="layout" id="map-section">
-        <div class="card map-card">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Focused Fort Drum route map</h2>
-              <p class="section-subtitle">This map stays locked on the six most actionable route candidates from Fort Drum. Use the host atlas above for the complete 16-venue reference layer.</p>
-            </div>
-          </div>
-
-          <div class="controls">
-            <div class="control">
-              <label for="sortSelect">Sort venues</label>
-              <select id="sortSelect">
-                <option value="distance">Shortest distance</option>
-                <option value="travelHours">Shortest travel time</option>
-                <option value="capacity">Highest stadium capacity</option>
-                <option value="earliest">Earliest match date</option>
-              </select>
-            </div>
-            <div class="control">
-              <label>Country filter</label>
-              <div class="country-pills">
-                <button class="pill active" data-country="All">All</button>
-                <button class="pill" data-country="United States">United States</button>
-                <button class="pill" data-country="Canada">Canada</button>
-                <button class="pill" data-country="Mexico">Mexico</button>
-              </div>
-            </div>
-            <div class="control">
-              <label>Travel rule</label>
-              <div class="filter-readout" id="modeReadout"></div>
-            </div>
-            <div class="control">
-              <label>Calendar scope</label>
-              <div class="filter-readout" id="calendarReadout"></div>
-            </div>
-          </div>
-
-          <div id="map"></div>
-
-          <div class="map-foot">
-            <div class="legend"><span class="chip" style="background: var(--usa)"></span> United States</div>
-            <div class="legend"><span class="chip" style="background: var(--canada)"></span> Canada</div>
-            <div class="legend"><span class="chip" style="background: var(--mexico)"></span> Mexico</div>
-            <div class="legend"><span class="chip" style="background: var(--warning)"></span> Better by air</div>
-            <div class="legend"><span class="chip" style="background: var(--success)"></span> Strong road-trip option</div>
+      <section class="card map-card" id="map-section">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Focused Fort Drum route map</h2>
+            <p class="section-subtitle">This map stays locked on the six most actionable route candidates from Fort Drum. The support intelligence now lives below it so the section reads cleanly at normal desktop zoom.</p>
           </div>
         </div>
 
-        <aside class="card side-panel">
-          <div class="mini-card">
-            <h3>Ranked from Fort Drum</h3>
-            <div class="rank-list" id="rankList"></div>
+        <div class="controls">
+          <div class="control">
+            <label for="sortSelect">Sort venues</label>
+            <select id="sortSelect">
+              <option value="distance">Shortest distance</option>
+              <option value="travelHours">Shortest travel time</option>
+              <option value="capacity">Highest stadium capacity</option>
+              <option value="earliest">Earliest match date</option>
+            </select>
+          </div>
+          <div class="control">
+            <label>Country filter</label>
+            <div class="country-pills">
+              <button class="pill active" data-country="All">All</button>
+              <button class="pill" data-country="United States">United States</button>
+              <button class="pill" data-country="Canada">Canada</button>
+              <button class="pill" data-country="Mexico">Mexico</button>
+            </div>
+          </div>
+          <div class="control">
+            <label>Travel rule</label>
+            <div class="filter-readout" id="modeReadout"></div>
+          </div>
+          <div class="control">
+            <label>Calendar scope</label>
+            <div class="filter-readout" id="calendarReadout"></div>
+          </div>
+        </div>
+
+        <div id="map"></div>
+
+        <div class="map-foot">
+          <div class="legend"><span class="chip" style="background: var(--usa)"></span> United States</div>
+          <div class="legend"><span class="chip" style="background: var(--canada)"></span> Canada</div>
+          <div class="legend"><span class="chip" style="background: var(--mexico)"></span> Mexico</div>
+          <div class="legend"><span class="chip" style="background: var(--warning)"></span> Better by air</div>
+          <div class="legend"><span class="chip" style="background: var(--success)"></span> Strong road-trip option</div>
+        </div>
+      </section>
+
+      <section class="route-board">
+        <div class="route-board-grid">
+          <div class="route-column">
+            <section class="card route-panel">
+              <div class="section-head compact-head">
+                <div>
+                  <h2 class="section-title">Ranked from Fort Drum</h2>
+                  <p class="section-subtitle">The running order inside the current map scope.</p>
+                </div>
+              </div>
+              <div class="rank-list route-list" id="rankList"></div>
+            </section>
+
+            <section class="card route-panel">
+              <div class="section-head compact-head">
+                <div>
+                  <h2 class="section-title">Best options for you</h2>
+                  <p class="section-subtitle">Closest, fastest, biggest, and earliest in the current scope.</p>
+                </div>
+              </div>
+              <div class="best-grid route-best-grid" id="bestGrid"></div>
+            </section>
           </div>
 
-          <div class="mini-card">
-            <h3>Best options for you</h3>
-            <div class="best-grid" id="bestGrid"></div>
-          </div>
+          <div class="route-column">
+            <section class="card route-panel spotlight-panel">
+              <div class="section-head compact-head">
+                <div>
+                  <h2 class="section-title">Host nation spotlight</h2>
+                  <p class="section-subtitle">Mascot-led host context that syncs with the active nation filter.</p>
+                </div>
+              </div>
+              <div id="hostSpotlight"></div>
+            </section>
 
-          <div class="mini-card">
-            <h3>Travel logic</h3>
-            <p class="note"><strong>Road trips:</strong> Toronto, MetLife, and Philadelphia are still the cleanest plays if you want mileage that makes sense from Fort Drum.</p>
-            <p class="note"><strong>Flight trips:</strong> Miami, Vancouver, and Mexico City earn their place because the host cities and match upside justify a real travel day.</p>
-            <p class="note"><strong>Border note:</strong> Toronto wins on speed and value, but it still depends on documents and crossing times.</p>
+            <section class="card route-panel route-logic-panel">
+              <div class="section-head compact-head">
+                <div>
+                  <h2 class="section-title">Travel logic</h2>
+                  <p class="section-subtitle">What is actually practical from Fort Drum once mileage, city payoff, and host-nation context are weighed together.</p>
+                </div>
+              </div>
+              <div class="route-notes">
+                <div class="note-box"><strong>Road trips:</strong> Toronto, MetLife, and Philadelphia are still the cleanest plays if you want mileage that makes sense from Fort Drum.</div>
+                <div class="note-box"><strong>Flight trips:</strong> Miami, Vancouver, and Mexico City earn their place because the host cities and match upside justify a real travel day.</div>
+                <div class="note-box"><strong>Border note:</strong> Toronto wins on speed and value, but it still depends on documents and crossing times.</div>
+              </div>
+              <div class="route-logic-art">
+                <img src="assets/mascots/host-mascots-trio.png" alt="Canada, United States, and Mexico host mascots">
+              </div>
+            </section>
           </div>
-        </aside>
+        </div>
       </section>
 
       <section class="panel-grid">
@@ -2289,39 +2818,33 @@
         <div class="section-head">
           <div>
             <h2 class="section-title">Match schedule by venue</h2>
-            <p class="section-subtitle">Every confirmed match currently assigned to the six stadiums in this dashboard. Select a venue above and its schedule block lights up here too.</p>
+            <p class="section-subtitle">A controlled schedule view: pick one venue, scan its full timeline, and keep the stage context beside it instead of spreading tall columns across the page.</p>
           </div>
         </div>
         <div class="schedule-note">Bracket note: <strong>W85</strong> means winner of Match 85. Codes like <strong>1B</strong> mean first place in Group B.</div>
-        <div class="schedule-grid" id="scheduleGrid"></div>
+        <div class="schedule-filter-strip" id="scheduleVenueTabs"></div>
+        <div class="schedule-overview">
+          <div class="schedule-hero" id="scheduleHero"></div>
+          <div class="schedule-support" id="scheduleSupport"></div>
+        </div>
+        <div class="schedule-timeline" id="scheduleGrid"></div>
       </section>
 
-      <section class="panel-grid">
-        <section class="card calendar-card" id="calendar-section">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Calendar of selected-venue games</h2>
-              <p class="section-subtitle">A month-by-month planner that rolls every confirmed game at the six chosen hosts into one chronological view.</p>
-            </div>
+      <section class="card calendar-card" id="calendar-section">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Calendar of selected-venue games</h2>
+            <p class="section-subtitle">A full-width planner that keeps the recommendation strip attached to the calendar instead of leaving a short side rail beside a much taller event list.</p>
           </div>
-          <div class="calendar-wrap" id="calendarWrap"></div>
-        </section>
-
-        <section class="card summary-card" id="summary-section">
-          <div class="section-head">
-            <div>
-              <h2 class="section-title">Final recommendation summary</h2>
-              <p class="section-subtitle">The direct answers to the decisions that actually matter.</p>
-            </div>
-          </div>
-          <div class="summary-grid" id="summaryGrid"></div>
-        </section>
+        </div>
+        <div class="calendar-summary" id="summaryGrid"></div>
+        <div class="calendar-wrap" id="calendarWrap"></div>
       </section>
 
       <footer class="page-footer">
         <div class="page-footer-copy">
           <strong>Fort Drum 2026 World Cup Travel Planner</strong>
-          <p>Route guidance is editorial, map data comes from OpenStreetMap/CARTO, and venue imagery uses your local deck assets plus curated Wikimedia photos where needed. Keyboard focus states, smoother section navigation, and a back-to-top action are now built in.</p>
+          <p>Route guidance is editorial, map data comes from OpenStreetMap/CARTO, and the 2026 media layer now uses sharper local venue and city photography plus your mascot assets where they add actual host-nation value. Keyboard focus states, smoother section navigation, and a back-to-top action are built in.</p>
         </div>
         <button class="back-to-top" id="backToTopBtn" type="button">Back to top</button>
       </footer>
@@ -2503,6 +3026,169 @@
       mexico: getComputedStyle(document.documentElement).getPropertyValue('--mexico').trim()
     };
 
+    function mediaSet(base, alt) {
+      return {
+        src: `assets/web/optimized/2026/${base}-1600.jpg`,
+        srcset: `assets/web/optimized/2026/${base}-960.jpg 960w, assets/web/optimized/2026/${base}-1600.jpg 1600w`,
+        alt
+      };
+    }
+
+    function galleryItem(base, alt, label, title) {
+      return {
+        ...mediaSet(base, alt),
+        label,
+        title
+      };
+    }
+
+    function renderResponsiveImage(media, sizes, className = '') {
+      if (!media) return '';
+      return `<img${className ? ` class="${className}"` : ''} src="${media.src}" srcset="${media.srcset}" sizes="${sizes}" alt="${media.alt}" loading="lazy">`;
+    }
+
+    const venueMedia = {
+      toronto: {
+        lead: mediaSet('toronto-bmo-exterior', 'High-resolution exterior view of BMO Field in Toronto'),
+        gallery: [
+          galleryItem('toronto-bmo-exterior', 'High-resolution exterior view of BMO Field in Toronto', 'Venue photo', 'BMO Field'),
+          galleryItem('toronto-city-skyline', 'Toronto skyline viewed from the islands', 'City skyline', 'Toronto skyline'),
+          galleryItem('toronto-islands', 'Toronto waterfront and islands facing downtown', 'Waterfront cue', 'Toronto Islands')
+        ],
+        atlasLead: mediaSet('toronto-bmo-exterior', 'High-resolution exterior view of BMO Field in Toronto'),
+        atlasSupport: [
+          galleryItem('toronto-city-skyline', 'Toronto skyline viewed from the islands', 'City skyline', 'Toronto skyline'),
+          galleryItem('toronto-islands', 'Toronto waterfront and islands facing downtown', 'Waterfront cue', 'Toronto Islands')
+        ]
+      },
+      nynj: {
+        lead: mediaSet('metlife-stadium', 'Aerial view of MetLife Stadium in East Rutherford'),
+        gallery: [
+          galleryItem('metlife-stadium', 'Aerial view of MetLife Stadium in East Rutherford', 'Venue photo', 'MetLife Stadium'),
+          galleryItem('newyork-city-night', 'New York City skyline at blue hour', 'Metro backdrop', 'New York skyline'),
+          galleryItem('newyork-midtown', 'Midtown Manhattan skyline seen from the west side', 'Final host cue', 'Midtown Manhattan')
+        ],
+        atlasLead: mediaSet('metlife-stadium', 'Aerial view of MetLife Stadium in East Rutherford'),
+        atlasSupport: [
+          galleryItem('newyork-city-night', 'New York City skyline at blue hour', 'Metro backdrop', 'New York skyline'),
+          galleryItem('newyork-midtown', 'Midtown Manhattan skyline seen from the west side', 'Final host cue', 'Midtown Manhattan')
+        ]
+      },
+      philadelphia: {
+        lead: mediaSet('philadelphia-lincoln-lead', 'Aerial view of Lincoln Financial Field in Philadelphia'),
+        gallery: [
+          galleryItem('philadelphia-lincoln-lead', 'Aerial view of Lincoln Financial Field in Philadelphia', 'Venue photo', 'Lincoln Financial Field'),
+          galleryItem('philadelphia-city-skyline', 'Philadelphia skyline at golden hour', 'City skyline', 'Philadelphia skyline'),
+          galleryItem('philadelphia-boathouse', 'Boathouse Row and the Schuylkill River in Philadelphia', 'River texture', 'Boathouse Row')
+        ],
+        atlasLead: mediaSet('philadelphia-lincoln-lead', 'Aerial view of Lincoln Financial Field in Philadelphia'),
+        atlasSupport: [
+          galleryItem('philadelphia-city-skyline', 'Philadelphia skyline at golden hour', 'City skyline', 'Philadelphia skyline'),
+          galleryItem('philadelphia-boathouse', 'Boathouse Row and the Schuylkill River in Philadelphia', 'River texture', 'Boathouse Row')
+        ]
+      },
+      miami: {
+        lead: mediaSet('miami-hardrock-lead', 'High-resolution aerial view of Hard Rock Stadium'),
+        gallery: [
+          galleryItem('miami-hardrock-lead', 'High-resolution aerial view of Hard Rock Stadium', 'Venue photo', 'Hard Rock Stadium'),
+          galleryItem('miami-biscayne', 'Miami skyline along Biscayne Bay', 'City skyline', 'Biscayne Bay skyline'),
+          galleryItem('miami-southbeach', 'Ocean Drive and South Beach in Miami Beach', 'City texture', 'South Beach')
+        ],
+        atlasLead: mediaSet('miami-hardrock-lead', 'High-resolution aerial view of Hard Rock Stadium'),
+        atlasSupport: [
+          galleryItem('miami-biscayne', 'Miami skyline along Biscayne Bay', 'City skyline', 'Biscayne Bay skyline'),
+          galleryItem('miami-southbeach', 'Ocean Drive and South Beach in Miami Beach', 'City texture', 'South Beach')
+        ]
+      },
+      'mexico-city': {
+        lead: mediaSet('mexico-azteca-lead', 'Interior view of Estadio Azteca in Mexico City'),
+        gallery: [
+          galleryItem('mexico-azteca-lead', 'Interior view of Estadio Azteca in Mexico City', 'Venue photo', 'Estadio Azteca'),
+          galleryItem('mexico-city-skyline', 'Mexico City skyline from above', 'City skyline', 'Mexico City skyline'),
+          galleryItem('mexico-reforma', 'Paseo de la Reforma in Mexico City', 'City texture', 'Paseo de la Reforma')
+        ],
+        atlasLead: mediaSet('mexico-azteca-lead', 'Interior view of Estadio Azteca in Mexico City'),
+        atlasSupport: [
+          galleryItem('mexico-city-skyline', 'Mexico City skyline from above', 'City skyline', 'Mexico City skyline'),
+          galleryItem('mexico-reforma', 'Paseo de la Reforma in Mexico City', 'City texture', 'Paseo de la Reforma')
+        ]
+      },
+      vancouver: {
+        lead: mediaSet('vancouver-bcplace-lead', 'BC Place during the 2015 FIFA Women’s World Cup'),
+        gallery: [
+          galleryItem('vancouver-bcplace-lead', 'BC Place during the 2015 FIFA Women’s World Cup', 'Venue photo', 'BC Place'),
+          galleryItem('vancouver-city-skyline', 'Vancouver skyline and False Creek', 'City skyline', 'Vancouver skyline'),
+          galleryItem('vancouver-falsecreek', 'False Creek waterfront in Vancouver', 'Waterfront cue', 'False Creek')
+        ],
+        atlasLead: mediaSet('vancouver-bcplace-lead', 'BC Place during the 2015 FIFA Women’s World Cup'),
+        atlasSupport: [
+          galleryItem('vancouver-city-skyline', 'Vancouver skyline and False Creek', 'City skyline', 'Vancouver skyline'),
+          galleryItem('vancouver-falsecreek', 'False Creek waterfront in Vancouver', 'Waterfront cue', 'False Creek')
+        ]
+      },
+      guadalajara: {
+        atlasLead: mediaSet('guadalajara-akron-lead', 'Estadio Akron in Guadalajara')
+      },
+      monterrey: {
+        atlasLead: mediaSet('monterrey-bbva-lead', 'Estadio BBVA with the Monterrey mountains behind it')
+      },
+      atlanta: {
+        atlasLead: mediaSet('atlanta-mercedes-lead', 'Mercedes-Benz Stadium in Atlanta')
+      },
+      foxborough: {
+        atlasLead: mediaSet('foxborough-gillette-lead', 'Aerial view of Gillette Stadium in Foxborough')
+      },
+      arlington: {
+        atlasLead: mediaSet('arlington-att-lead', 'AT&T Stadium in Arlington, Texas')
+      },
+      houston: {
+        atlasLead: mediaSet('houston-nrg-lead', 'NRG Stadium in Houston')
+      },
+      'kansas-city': {
+        atlasLead: mediaSet('kansascity-arrowhead-lead', 'Aerial view of Arrowhead Stadium in Kansas City')
+      },
+      inglewood: {
+        atlasLead: mediaSet('inglewood-sofi-lead', 'SoFi Stadium in Inglewood, California')
+      },
+      'santa-clara': {
+        atlasLead: mediaSet('santaclara-levis-lead', 'Levi’s Stadium in Santa Clara')
+      },
+      seattle: {
+        atlasLead: mediaSet('seattle-lumen-lead', 'Lumen Field in Seattle'),
+        atlasSupport: [
+          galleryItem('seattle-city-skyline', 'Seattle skyline at night', 'City skyline', 'Seattle skyline'),
+          galleryItem('seattle-pikeplace', 'Pike Place Market in Seattle', 'City texture', 'Pike Place Market')
+        ]
+      }
+    };
+
+    const hostNationInfo = {
+      Canada: {
+        code: 'canada',
+        mascot: 'assets/mascots/mascot-canada.png',
+        kicker: 'Border-first host nation',
+        title: 'Canada',
+        body: 'Canada gives you the cleanest border play from Fort Drum and the sharpest east-west contrast between Toronto and Vancouver.',
+        note: 'Toronto is the practical strike. Vancouver is the scenic long-haul if the Pacific setting is part of the goal.'
+      },
+      'United States': {
+        code: 'usa',
+        mascot: 'assets/mascots/mascot-usa.png',
+        kicker: 'Domestic routing depth',
+        title: 'United States',
+        body: 'The U.S. hosts give you the deepest bench: the easiest domestic weekenders plus the final, Florida, Texas, California, and Pacific Northwest references.',
+        note: 'MetLife and Philadelphia stay practical. Miami only wins if the city or bracket upside is worth the airfare.'
+      },
+      Mexico: {
+        code: 'mexico',
+        mascot: 'assets/mascots/mascot-mexico.png',
+        kicker: 'Marquee culture play',
+        title: 'Mexico',
+        body: 'Mexico is the high-payoff nation in this planner: football heritage, altitude, and a trio of venues that feel meaningfully different from the U.S. and Canada hosts.',
+        note: 'Mexico City is the marquee call. Guadalajara and Monterrey are the knowledge-base references if you want the broader tournament map.'
+      }
+    };
+
     const venueProfiles = {
       toronto: {
         opened: '2007',
@@ -2512,26 +3198,7 @@
         cityHistory: 'Toronto grew from a lakeside colonial settlement into Canada\'s largest city and the commercial anchor of Ontario. The city\'s scale is matched by neighborhood diversity, waterfront reinvention, and a skyline that feels unmistakably global.',
         stadiumHistory: 'BMO Field opened in 2007 on the old Exhibition Stadium site and became the home of Toronto FC and the Argonauts. Expansions pushed it into true major-event territory without losing the tighter, supporter-driven atmosphere that suits tournament nights.',
         localAngle: 'If you want the fastest border-crossing flex with real host-city payoff, this is the move. You get skyline views, waterfront walks, and a venue that feels closer to football culture than oversized NFL scale.',
-        gallery: [
-          {
-            src: 'assets/deck/image-5-3.jpeg',
-            label: 'Venue photo',
-            title: 'BMO Field',
-            alt: 'BMO Field in Toronto'
-          },
-          {
-            src: 'assets/deck/image-5-5.jpeg',
-            label: 'City skyline',
-            title: 'CN Tower skyline',
-            alt: 'Toronto skyline with the CN Tower'
-          },
-          {
-            src: 'assets/deck/image-5-6.jpeg',
-            label: 'City texture',
-            title: 'Toronto waterfront',
-            alt: 'Toronto waterfront'
-          }
-        ]
+        gallery: venueMedia.toronto.gallery
       },
       nynj: {
         opened: '2010',
@@ -2541,26 +3208,7 @@
         cityHistory: 'East Rutherford is a small Meadowlands borough, but the real pull is the metro scale wrapped around it. You are sitting on the edge of the New York region, where a local game trip can turn into skyline views, rail links, and one of the densest urban systems in North America.',
         stadiumHistory: 'MetLife Stadium opened in 2010 to replace Giants Stadium and became the shared home of the Jets and Giants. It was built at modern mega-venue scale and is already positioned as the biggest domestic prize on this board because it hosts the 2026 final.',
         localAngle: 'This is the strongest domestic flex if you care about bracket upside and city spillover. You get Meadowlands ease on game day and the New York skyline as the cultural add-on.',
-        gallery: [
-          {
-            src: 'assets/web/optimized/metlife-aerial-1800.jpg',
-            label: 'Venue photo',
-            title: 'MetLife Stadium',
-            alt: 'High-resolution aerial view of MetLife Stadium'
-          },
-          {
-            src: 'assets/web/optimized/nyc-skyline-night-1800.jpg',
-            label: 'Metro backdrop',
-            title: 'New York skyline at blue hour',
-            alt: 'New York City skyline at dusk'
-          },
-          {
-            src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg/1280px-View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu_%28cropped%29.jpg',
-            label: 'Final host cue',
-            title: 'Manhattan match-night cue',
-            alt: 'New York City skyline with the Empire State Building'
-          }
-        ]
+        gallery: venueMedia.nynj.gallery
       },
       philadelphia: {
         opened: '2003',
@@ -2570,26 +3218,7 @@
         cityHistory: 'Philadelphia is one of the foundational cities of the United States and still carries that weight in its street grid, civic buildings, and museum core. It mixes deep national history with food, sports, and neighborhood culture that still feels specific instead of generic.',
         stadiumHistory: 'Lincoln Financial Field opened in 2003 as part of the South Philadelphia sports complex. It was built for NFL scale, but it has already shown it can host big one-off events and international matches with the right level of occasion.',
         localAngle: 'Philadelphia is the move if you want history, walkable city texture, and a slightly less overwhelming trip than the New York corridor. It feels substantial without becoming a full expedition.',
-        gallery: [
-          {
-            src: 'assets/deck/image-19-3.jpeg',
-            label: 'Venue photo',
-            title: 'Lincoln Financial Field',
-            alt: 'Aerial view of Lincoln Financial Field'
-          },
-          {
-            src: 'assets/deck/image-19-4.jpeg',
-            label: 'Stadium exterior',
-            title: 'Exterior approach',
-            alt: 'Exterior view of Lincoln Financial Field'
-          },
-          {
-            src: 'assets/deck/image-19-5.jpeg',
-            label: 'City skyline',
-            title: 'Philadelphia skyline',
-            alt: 'Philadelphia skyline'
-          }
-        ]
+        gallery: venueMedia.philadelphia.gallery
       },
       miami: {
         opened: '1987',
@@ -2599,26 +3228,7 @@
         cityHistory: 'Miami Gardens is a young city in Miami-Dade County, while the broader Miami area has grown into one of the United States\' most recognizable coastal metros. That wider South Florida mix of immigration, skyline growth, music, and waterfront culture is what gives this trip its real draw.',
         stadiumHistory: 'Hard Rock Stadium opened in 1987 and has been repeatedly reworked to stay relevant across football, tennis, concerts, and global events. It has the kind of multi-event muscle that makes a World Cup stop feel polished rather than improvised.',
         localAngle: 'This is the flight you take because the city feels like part of the event. If you want beaches, nightlife, and a warmer tournament weekend rather than pure convenience, Miami earns the airfare.',
-        gallery: [
-          {
-            src: 'assets/deck/image-17-1.jpeg',
-            label: 'Venue photo',
-            title: 'Hard Rock Stadium',
-            alt: 'Hard Rock Stadium in Miami Gardens'
-          },
-          {
-            src: 'assets/deck/image-17-2.jpeg',
-            label: 'Stadium interior',
-            title: 'Match-day bowl',
-            alt: 'Interior of Hard Rock Stadium'
-          },
-          {
-            src: 'assets/deck/image-17-3.jpeg',
-            label: 'City skyline',
-            title: 'Miami skyline',
-            alt: 'Miami skyline'
-          }
-        ]
+        gallery: venueMedia.miami.gallery
       },
       'mexico-city': {
         opened: '1966',
@@ -2628,26 +3238,7 @@
         cityHistory: 'Mexico City stands on the layered ground of Tenochtitlan and grew into the country\'s capital, largest city, and cultural center. It feels enormous because it is: dense, high-altitude, historically charged, and still central to finance, food, art, and politics in Mexico.',
         stadiumHistory: 'Estadio Azteca opened in 1966 and became one of football\'s canonical stages. Its scale, altitude, and history give it a gravity that few other venues can match, which is why it still reads as a pilgrimage venue instead of just another host stadium.',
         localAngle: 'You do this trip for the sense of occasion. The city is vast, the football history is real, and the venue carries more myth than convenience.',
-        gallery: [
-          {
-            src: 'assets/deck/image-7-3.jpeg',
-            label: 'Venue photo',
-            title: 'Estadio Azteca',
-            alt: 'Interior view of Estadio Azteca'
-          },
-          {
-            src: 'assets/deck/image-7-4.jpeg',
-            label: 'Stadium exterior',
-            title: 'Azteca exterior',
-            alt: 'Exterior of Estadio Azteca'
-          },
-          {
-            src: 'assets/deck/image-7-5.jpeg',
-            label: 'City skyline',
-            title: 'Mexico City skyline',
-            alt: 'Mexico City skyline'
-          }
-        ]
+        gallery: venueMedia['mexico-city'].gallery
       },
       vancouver: {
         opened: '1983',
@@ -2657,26 +3248,7 @@
         cityHistory: 'Vancouver grew as a Pacific port city and remains one of Canada\'s most outward-facing urban centers. Water, mountains, immigration, and Pacific trade give it a tone that feels very different from the eastern hosts in this planner.',
         stadiumHistory: 'BC Place opened in 1983 and later underwent a major roof transformation that helped modernize the building without stripping away its landmark status on False Creek. It already knows how to sit inside a skyline instead of outside the city.',
         localAngle: 'This is not the efficient pick. It is the dramatic one. You go because the Pacific setting, mountain edge, and west-coast mood are part of the story you want from the tournament.',
-        gallery: [
-          {
-            src: 'assets/deck/image-4-3.jpeg',
-            label: 'Venue photo',
-            title: 'BC Place',
-            alt: 'BC Place in Vancouver'
-          },
-          {
-            src: 'assets/deck/image-4-4.jpeg',
-            label: 'Stadium exterior',
-            title: 'BC Place exterior',
-            alt: 'Exterior view of BC Place'
-          },
-          {
-            src: 'assets/deck/image-4-5.jpeg',
-            label: 'City skyline',
-            title: 'Vancouver skyline',
-            alt: 'Vancouver skyline'
-          }
-        ]
+        gallery: venueMedia.vancouver.gallery
       }
     };
 
@@ -3191,11 +3763,34 @@
     heroMap.fitBounds(L.latLngBounds(venues.map(venue => [venue.lat, venue.lng])), {
       padding: [24, 24]
     });
-    map.on('popupclose', () => heroMap.closePopup());
-    heroMap.on('popupclose', () => map.closePopup());
+    let syncingPopupClose = false;
+    function closeLinkedPopup(targetMap) {
+      if (syncingPopupClose) return;
+      syncingPopupClose = true;
+      targetMap.closePopup();
+      syncingPopupClose = false;
+    }
+    map.on('popupclose', () => closeLinkedPopup(heroMap));
+    heroMap.on('popupclose', () => closeLinkedPopup(map));
 
     function buildRankList(list) {
       const rankList = document.getElementById('rankList');
+      const referenceHosts = currentCountry === 'All'
+        ? []
+        : hostAtlas.filter(host => host.country === currentCountry && !list.some(venue => venue.id === host.id));
+      const scopeNote = currentCountry === 'All' || list.length >= 3
+        ? ''
+        : `
+          <div class="rank-foot">
+            <h3>${currentCountry} scope read</h3>
+            <p>${currentCountry} currently has ${list.length} live shortlist ${list.length === 1 ? 'play' : 'plays'} in this planner. The rest of that host nation lives in the atlas so the layout stays useful even when the active routing scope gets narrow.</p>
+            ${referenceHosts.length ? `
+              <div class="rank-foot-chips">
+                ${referenceHosts.map(host => `<span>${host.city.replace(/\s*\(.+?\)/g, '').split(',')[0].trim()}</span>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
       rankList.innerHTML = list.map((venue, idx) => `
         <div class="rank-item ${activeVenueId === venue.id ? 'active' : ''}" data-id="${venue.id}">
           <div class="rank-num">${idx + 1}</div>
@@ -3204,7 +3799,7 @@
             <div class="rank-meta">${venue.city} · ${venue.travelLabel}</div>
           </div>
           <div class="country-badge ${venue.code}">${venue.country}</div>
-        </div>`).join('');
+        </div>`).join('') + scopeNote;
       rankList.querySelectorAll('.rank-item').forEach(el => {
         el.addEventListener('click', () => focusVenue(el.dataset.id));
       });
@@ -3217,6 +3812,9 @@
       const largest = [...scoped].sort((a,b)=> b.capacity - a.capacity)[0];
       const earliest = [...scoped].sort((a,b)=> new Date(firstMatch(a).date) - new Date(firstMatch(b).date))[0];
       const scopeLabel = currentCountry === 'All' ? 'current shortlist' : currentCountry;
+      const referenceHosts = currentCountry === 'All'
+        ? []
+        : hostAtlas.filter(host => host.country === currentCountry && !scoped.some(venue => venue.id === host.id));
       document.getElementById('bestGrid').innerHTML = `
         <div class="best-box">
           <div class="best-label">Closest in ${scopeLabel}</div>
@@ -3238,7 +3836,68 @@
           <div class="best-value">${earliest.stadium}</div>
           <div class="best-note">${fmtDateShort(firstMatch(earliest).date)} · ${firstMatch(earliest).fixture}</div>
         </div>
+        ${referenceHosts.length ? `
+          <div class="best-box">
+            <div class="best-label">Atlas-only hosts in ${currentCountry}</div>
+            <div class="best-value">${referenceHosts.map(host => host.city.replace(/\s*\(.+?\)/g, '').split(',')[0].trim()).join(' · ')}</div>
+            <div class="best-note">These stay in the atlas for broader tournament reference even when the live shortlist for this nation is narrow.</div>
+          </div>
+        ` : ''}
       `;
+    }
+
+    function buildHostSpotlight() {
+      const spotlightCountry = currentCountry === 'All'
+        ? (venues.find(v => v.id === activeVenueId)?.country || 'United States')
+        : currentCountry;
+      const info = hostNationInfo[spotlightCountry];
+      const allHosts = hostAtlas.filter(host => host.country === spotlightCountry);
+      const shortlistHosts = venues.filter(venue => venue.country === spotlightCountry);
+      const cityChips = allHosts.map(host => host.city.replace(/\s*\(.+?\)/g, '').split(',')[0].trim());
+
+      document.getElementById('hostSpotlight').innerHTML = `
+        <div class="spotlight-shell">
+          <div class="nation-tabs">
+            ${Object.entries(hostNationInfo).map(([country, nation]) => `
+              <button class="nation-tab ${nation.code} ${country === spotlightCountry ? 'active' : ''}" data-country="${country}" type="button">${country}</button>
+            `).join('')}
+          </div>
+          <div class="nation-card ${info.code}">
+            <div class="nation-copy">
+              <div>
+                <div class="nation-kicker">${info.kicker}</div>
+                <h3 class="nation-title">${info.title}</h3>
+              </div>
+              <p class="nation-body">${info.body}</p>
+              <div class="nation-counts">
+                <div class="nation-metric"><strong>${allHosts.length}</strong> host venues</div>
+                <div class="nation-metric"><strong>${shortlistHosts.length}</strong> live shortlist plays</div>
+                <div class="nation-metric"><strong>${allHosts.reduce((sum, host) => sum + (host.badge === 'Shortlist' ? 1 : 0), 0)}</strong> focus venues</div>
+              </div>
+              <div class="nation-city-ribbon">
+                ${cityChips.map(city => `<span class="nation-city-chip">${city}</span>`).join('')}
+              </div>
+              <p class="nation-body">${info.note}</p>
+              <div class="nation-quick-links">
+                ${shortlistHosts.map(venue => `<button class="nation-link" type="button" data-id="${venue.id}">${venue.stadium}</button>`).join('')}
+              </div>
+            </div>
+            <div class="nation-mascot">
+              <img src="${info.mascot}" alt="${info.title} World Cup host mascot">
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.querySelectorAll('.nation-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentCountry = btn.dataset.country;
+          refresh();
+        });
+      });
+      document.querySelectorAll('.nation-link').forEach(btn => {
+        btn.addEventListener('click', () => focusVenue(btn.dataset.id));
+      });
     }
 
     function buildControlReadouts(list) {
@@ -3264,9 +3923,10 @@
       const venue = venues.find(v => v.id === activeVenueId) || venues[0];
       const profile = venueProfiles[venue.id];
       const next = firstMatch(venue);
+      const media = venueMedia[venue.id]?.lead;
       document.getElementById('heroBrief').innerHTML = `
         <div class="hero-focus-media">
-          <img src="${profile.gallery[0].src}" alt="${profile.gallery[0].alt}" loading="lazy">
+          ${renderResponsiveImage(media, '(max-width: 1180px) 100vw, 24vw')}
         </div>
         <div class="hero-focus-copy">
           <h3>${venue.stadium}</h3>
@@ -3279,19 +3939,25 @@
     function buildProfilePanel() {
       const venue = venues.find(v => v.id === activeVenueId) || venues[0];
       const profile = venueProfiles[venue.id];
+      const gallery = profile.gallery;
+      const nation = hostNationInfo[venue.country];
+      const nationHosts = hostAtlas.filter(host => host.country === venue.country);
+      const nationCities = nationHosts.map(host => host.city.split(',')[0]);
+      const nationShortlist = venues.filter(item => item.country === venue.country);
+      const next = firstMatch(venue);
       document.getElementById('profilePanel').innerHTML = `
         <div class="profile-gallery">
           <figure class="lead-shot">
-            <img src="${profile.gallery[0].src}" alt="${profile.gallery[0].alt}" loading="lazy">
+            ${renderResponsiveImage(gallery[0], '(max-width: 860px) 100vw, 56vw')}
             <figcaption class="gallery-caption">
-              <span>${profile.gallery[0].label}</span>
-              <strong>${profile.gallery[0].title}</strong>
+              <span>${gallery[0].label}</span>
+              <strong>${gallery[0].title}</strong>
             </figcaption>
           </figure>
           <div class="gallery-column">
-            ${profile.gallery.slice(1, 3).map(item => `
+            ${gallery.slice(1, 3).map(item => `
               <figure class="gallery-shot">
-                <img src="${item.src}" alt="${item.alt}" loading="lazy">
+                ${renderResponsiveImage(item, '(max-width: 860px) 100vw, 26vw')}
                 <figcaption class="gallery-caption">
                   <span>${item.label}</span>
                   <strong>${item.title}</strong>
@@ -3299,6 +3965,25 @@
               </figure>
             `).join('')}
           </div>
+          <article class="profile-sidecar ${nation.code}">
+            <div class="profile-sidecar-copy">
+              <div class="profile-sidecar-kicker">${nation.kicker}</div>
+              <h4 class="profile-sidecar-title">${nation.title} host cue</h4>
+              <p class="profile-sidecar-note">${nation.note}</p>
+              <div class="profile-sidecar-metrics">
+                <span class="profile-sidecar-metric"><strong>${nationHosts.length}</strong> host venues</span>
+                <span class="profile-sidecar-metric"><strong>${nationShortlist.length}</strong> shortlist plays</span>
+                <span class="profile-sidecar-metric"><strong>${next.code}</strong> next up</span>
+              </div>
+              <div class="profile-sidecar-cities">
+                ${nationCities.slice(0, 4).map(city => `<span class="profile-sidecar-city">${city}</span>`).join('')}
+                ${nationCities.length > 4 ? `<span class="profile-sidecar-city">+${nationCities.length - 4} more</span>` : ''}
+              </div>
+            </div>
+            <div class="profile-sidecar-art">
+              <img src="${nation.mascot}" alt="${nation.title} World Cup host mascot">
+            </div>
+          </article>
         </div>
         <div class="profile-copy">
           <div class="profile-kicker">${venue.city} · ${venue.country}</div>
@@ -3336,17 +4021,20 @@
               <p>${venue.travelNote}</p>
             </article>
           </div>
-          <div class="photo-credit">Selected venue photography uses curated deck assets plus Wikimedia images where needed for additional city context.</div>
+          <div class="photo-credit">Selected venue photography now runs through a local optimized 2026 media layer built from higher-resolution venue and city sources.</div>
         </div>
       `;
     }
 
     function buildHostAtlasCard(host) {
       const isShortlist = venues.some(venue => venue.id === host.id);
+      const media = venueMedia[host.id] || {};
+      const cover = media.atlasLead || media.lead;
+      const support = media.atlasSupport || [];
       return `
         <article class="atlas-card">
           <div class="atlas-cover">
-            <img src="${host.cover}" alt="${host.stadium}" loading="lazy">
+            ${renderResponsiveImage(cover, '(max-width: 860px) 100vw, (max-width: 1380px) 33vw, 24vw')}
             <div class="atlas-chip-row">
               <span class="atlas-chip ${host.code}">${host.country}</span>
               <span class="atlas-capacity">${host.badge}</span>
@@ -3367,23 +4055,27 @@
               `).join('')}
             </div>
             <p class="atlas-note">${host.note}</p>
-            <div class="atlas-story-grid">
-              <article class="atlas-story">
-                <span>City history</span>
-                <p>${atlasContext[host.id].cityStory}</p>
-              </article>
-              <article class="atlas-story">
-                <span>Venue story</span>
-                <p>${atlasContext[host.id].stadiumStory}</p>
-              </article>
-            </div>
-            <div class="atlas-thumbs">
-              ${host.thumbs.map(item => `
-                <div class="atlas-thumb">
-                  <img src="${item.src}" alt="${item.label} for ${host.stadium}" loading="lazy">
-                  <span>${item.label}</span>
+            <div class="atlas-extra">
+              <div class="atlas-story-grid">
+                <article class="atlas-story">
+                  <span>City history</span>
+                  <p>${atlasContext[host.id].cityStory}</p>
+                </article>
+                <article class="atlas-story">
+                  <span>Venue story</span>
+                  <p>${atlasContext[host.id].stadiumStory}</p>
+                </article>
+              </div>
+              ${support.length ? `
+                <div class="atlas-support">
+                  ${support.map(item => `
+                    <figure class="atlas-support-shot">
+                      ${renderResponsiveImage(item, '(max-width: 860px) 100vw, 18vw')}
+                      <span>${item.title}</span>
+                    </figure>
+                  `).join('')}
                 </div>
-              `).join('')}
+              ` : ''}
             </div>
             <div class="atlas-actions ${isShortlist ? 'dual' : ''}">
               ${isShortlist ? `<button class="atlas-jump" type="button" data-id="${host.id}">Open this host in the detailed Fort Drum planner</button>` : ''}
@@ -3418,7 +4110,7 @@
       document.querySelectorAll('.rank-item').forEach(el => {
         el.classList.toggle('active', el.dataset.id === activeVenueId);
       });
-      document.querySelectorAll('.venue-schedule').forEach(el => {
+      document.querySelectorAll('.schedule-pill').forEach(el => {
         el.classList.toggle('active', el.dataset.id === activeVenueId);
       });
       document.querySelectorAll('.hero-map-chip').forEach(el => {
@@ -3433,11 +4125,11 @@
     function buildCards(list) {
       document.getElementById('cardsGrid').innerHTML = list.map(venue => {
         const next = firstMatch(venue);
-        const profile = venueProfiles[venue.id];
+        const media = venueMedia[venue.id]?.lead;
         return `
           <article class="stadium-card ${activeVenueId === venue.id ? 'active' : ''}" data-id="${venue.id}">
             <div class="stadium-art">
-              <img src="${profile.gallery[0].src}" alt="${profile.gallery[0].alt}" loading="lazy">
+              ${renderResponsiveImage(media, '(max-width: 860px) 86vw, 28vw')}
               <div class="stadium-overlay"></div>
               <div class="stadium-topline">
                 <span class="country-badge ${venue.code}">${venue.country}</span>
@@ -3482,27 +4174,71 @@
 
     function buildSchedules() {
       const list = venues.slice().sort((a,b)=> new Date(firstMatch(a).date) - new Date(firstMatch(b).date));
-      document.getElementById('scheduleGrid').innerHTML = list.map(venue => `
-        <section class="venue-schedule ${activeVenueId === venue.id ? 'active' : ''}" id="schedule-${venue.id}" data-id="${venue.id}">
-          <div class="venue-head">
-            <div>
-              <h3 class="venue-name">${venue.stadium}</h3>
-              <div class="stadium-meta">${venue.city} · ${venue.country} · capacity ${venue.capacity.toLocaleString()}</div>
+      const activeVenue = venues.find(v => v.id === activeVenueId) || list[0];
+      const nextMatch = firstMatch(activeVenue);
+      const stageCounts = activeVenue.schedules.reduce((acc, match) => {
+        acc[match.stage] = (acc[match.stage] || 0) + 1;
+        return acc;
+      }, {});
+      const dominantStage = Object.entries(stageCounts).sort((a,b) => b[1] - a[1])[0];
+      const lastMatch = [...activeVenue.schedules].sort((a,b)=> new Date(b.date)-new Date(a.date))[0];
+      const heroMedia = venueMedia[activeVenue.id]?.gallery?.[1] || venueMedia[activeVenue.id]?.lead;
+      document.getElementById('scheduleVenueTabs').innerHTML = list.map(venue => `
+        <button class="schedule-pill ${venue.id === activeVenueId ? 'active' : ''}" data-id="${venue.id}" type="button">${venue.stadium}</button>
+      `).join('');
+      document.getElementById('scheduleHero').innerHTML = `
+        <div class="schedule-hero-copy">
+          <div class="schedule-kicker">${activeVenue.city} · ${activeVenue.country}</div>
+          <h3 class="schedule-title">${activeVenue.stadium}</h3>
+          <p class="schedule-meta">${venueProfiles[activeVenue.id].lead}</p>
+          <div class="schedule-stage-grid">
+            <div class="schedule-stat">
+              <span>Matches</span>
+              <strong>${activeVenue.schedules.length}</strong>
             </div>
-            <div class="country-badge ${venue.code}">${venue.country}</div>
+            <div class="schedule-stat">
+              <span>First match</span>
+              <strong>${fmtDateShort(nextMatch.date)}</strong>
+            </div>
+            <div class="schedule-stat">
+              <span>Mode</span>
+              <strong>${activeVenue.travelMode}</strong>
+            </div>
           </div>
-          <div class="matches">
-            ${venue.schedules.sort((a,b)=> new Date(a.date)-new Date(b.date)).map(match => `
-              <div class="match">
-                <div class="match-top">
-                  <span class="match-stage">${match.stage}</span>
-                  <span class="match-date">${fmtDate(match.date)}</span>
-                </div>
-                <div class="match-fixture">${match.fixture}</div>
-                <div class="match-code">${match.code}</div>
-              </div>`).join('')}
+        </div>
+        <div class="schedule-hero-media">
+          ${renderResponsiveImage(heroMedia, '(max-width: 860px) 100vw, 22vw')}
+          <div class="schedule-hero-caption">${heroMedia?.title || activeVenue.city}</div>
+        </div>
+      `;
+      document.getElementById('scheduleSupport').innerHTML = `
+        <h3>Stage context</h3>
+        <div class="support-card">
+          <p><strong>Next on the board:</strong> ${nextMatch.code} · ${nextMatch.fixture} · ${fmtDate(nextMatch.date)}</p>
+        </div>
+        <div class="support-card">
+          <p><strong>Dominant stage:</strong> ${dominantStage[0]} · ${dominantStage[1]} match${dominantStage[1] > 1 ? 'es' : ''} in this venue timeline.</p>
+        </div>
+        <div class="support-card">
+          <p><strong>Last scheduled date:</strong> ${fmtDate(lastMatch.date)} · ${lastMatch.code}</p>
+        </div>
+        <div class="support-card">
+          <p><strong>Fort Drum read:</strong> ${activeVenue.travelNote}</p>
+        </div>
+      `;
+      document.getElementById('scheduleGrid').innerHTML = [...activeVenue.schedules].sort((a,b)=> new Date(a.date)-new Date(b.date)).map((match, index) => `
+        <article class="timeline-match ${index === 0 ? 'active' : ''}">
+          <div class="timeline-date">${fmtDate(match.date)}</div>
+          <div>
+            <div class="timeline-fixture">${match.fixture}</div>
+            <div class="timeline-meta">${match.stage} · ${activeVenue.stadium}</div>
           </div>
-        </section>`).join('');
+          <div class="timeline-code">${match.code}</div>
+        </article>
+      `).join('');
+      document.querySelectorAll('.schedule-pill').forEach(btn => {
+        btn.addEventListener('click', () => focusVenue(btn.dataset.id));
+      });
     }
 
     function buildCalendar() {
@@ -3537,15 +4273,19 @@
     }
 
     function buildSummary() {
+      const activeVenue = venues.find(v => v.id === activeVenueId) || venues[0];
+      const spotlightCountry = currentCountry === 'All'
+        ? activeVenue.country
+        : currentCountry;
       document.getElementById('summaryGrid').innerHTML = `
         <article class="summary-feature">
           <div class="summary-feature-copy">
             <div class="summary-feature-kicker">Smart shortlist</div>
-            <h3>Route the tournament like a person, not a spreadsheet</h3>
-            <p>Toronto and MetLife are the default answers. Philadelphia is the next clean move. Miami, Mexico City, and Vancouver only win if the city or bracket upside is the point.</p>
+            <h3>${activeVenue.stadium} is the live focus while ${spotlightCountry} owns the current host read.</h3>
+            <p>Toronto and MetLife remain the default answers. Philadelphia is the next clean move. Miami, Mexico City, and Vancouver only win if the city or bracket upside is the point.</p>
           </div>
           <div class="summary-feature-art">
-            <img src="assets/mascots/mascot-usa.png" alt="United States host mascot">
+            <img src="assets/mascots/host-mascots-trio.png" alt="Canada, United States, and Mexico World Cup host mascots">
           </div>
         </article>
         <div class="summary-box">
@@ -3583,9 +4323,19 @@
       } = options;
       const venue = venues.find(v => v.id === id);
       if (!venue) return;
+      if (currentCountry !== 'All' && venue.country !== currentCountry) {
+        currentCountry = venue.country;
+        activeVenueId = id;
+        refresh();
+        return;
+      }
       activeVenueId = id;
       buildHeroBrief();
       buildProfilePanel();
+      buildHostSpotlight();
+      buildSchedules();
+      buildCalendar();
+      buildSummary();
       syncActiveState();
       if (fly) {
         map.flyTo([venue.lat, venue.lng], venue.practicalClass === 'road' ? 6.8 : 4.8, { duration: 1.1 });
@@ -3617,11 +4367,14 @@
       buildCards(list);
       buildComparison(list);
       buildBestGrid(list);
+      buildHostSpotlight();
       buildControlReadouts(list);
-      buildSummary();
       buildHeroBrief();
       buildProfilePanel();
       buildHostAtlas();
+      buildSchedules();
+      buildCalendar();
+      buildSummary();
       syncCountryPills();
       syncActiveState();
 
@@ -3724,8 +4477,6 @@
     });
     window.addEventListener('scroll', syncNavWithScroll, { passive: true });
 
-    buildSchedules();
-    buildCalendar();
     refresh();
     setTimeout(() => {
       map.invalidateSize();
